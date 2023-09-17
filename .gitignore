@@ -1,0 +1,12 @@
+.idea/
+.DS_Store
+
+/vendor/*
+
+/writable/logs/*.log
+/writable/debugbar/*.json
+/writable/session/*
+!/writable/session/index.html
+/writable/uploads/vat-purchase-journals/*
+!/writable/uploads/vat-purchase-journals/index.html
+
