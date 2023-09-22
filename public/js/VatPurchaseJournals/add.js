@@ -18,7 +18,7 @@ class VatPurchaseJournalsAdd {
 
 
             //@todo: remove this when the providers are added to the database
-            if( selectedProvider === '2'){ // Фьоникс Фарма
+            if( selectedProvider === '2' || selectedProvider === '3'){ // Фьоникс Фарма
                 $('#business-holder').hide();
             } else {
                 $('#business-holder').show();
@@ -94,10 +94,21 @@ $(document).ready(function () {
             form.addEventListener('submit', function (event) {
                 let businessId = $('#businesses').val();
 
+                //check if element with id "businesses" is visibl
+                if($('#businesses').is(':visible') && businessId === ''){
+                    alert('Не е избрана фирма!!!');
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+
                 if (!form.checkValidity()) {
                     event.preventDefault()
                     event.stopPropagation()
-                } /*else if(businessId === '') {
+                }  else {
+                    $('#submit-btn').prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary').html('обработване...');
+                }
+                /*else if(businessId === '') {
                     alert('Не е избрана фирма!!!');
                     event.preventDefault()
                     event.stopPropagation()

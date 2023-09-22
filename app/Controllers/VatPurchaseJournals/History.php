@@ -5,6 +5,7 @@ namespace App\Controllers\VatPurchaseJournals;
 use App\Controllers\BaseController;
 use App\Models\VatPurchaseJournalsModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
+use App\Models\VPJStingEntitiesModel;
 use Config\Services;
 
 class History extends BaseController
@@ -39,7 +40,14 @@ class History extends BaseController
         $vatPurchaseJournalsModel = new VatPurchaseJournalsModel();
         $vpJDetails = $vatPurchaseJournalsModel->find($vpjId);
 
-        if((int)$vpJDetails['provider_id'] === 2){
+        if((int)$vpJDetails['provider_id'] === 1){
+            $this->viewData['vpjDetails'] = $vpJDetails;
+
+            $vpjStingModel = new VPJStingEntitiesModel();
+            $this->viewData['vpjStingEntities'] = $vpjStingModel->where('vat_purchase_journals_id', $vpjId)->orderBy('id', 'asc')->findAll();
+
+            return view('VatPurchaseJournals/History/history-view-sting', $this->viewData);
+        } elseif((int)$vpJDetails['provider_id'] === 2){
             $this->viewData['vpjDetails'] = $vpJDetails;
 
             $vpjFioniksFarmaEntitiesModel = new VPJFioniksFarmaEntitiesModel();
@@ -59,7 +67,10 @@ class History extends BaseController
         $uploadedFileDirRootLocation = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR;
         @unlink( $uploadedFileDirRootLocation . $vpJDetails['file_location']);
 
-        if((int)$vpJDetails['provider_id'] === 2){
+        if((int)$vpJDetails['provider_id'] === 1){
+            $vpjStingEntitiesModel = new VPJStingEntitiesModel();
+            $vpjStingEntitiesModel->where('vat_purchase_journals_id', $vpjId)->delete();
+        } elseif((int)$vpJDetails['provider_id'] === 2){
             $vpjFioniksFarmaEntitiesModel = new VPJFioniksFarmaEntitiesModel();
             $vpjFioniksFarmaEntitiesModel->where('vat_purchase_journals_id', $vpjId)->delete();
         }

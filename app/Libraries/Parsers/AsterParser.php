@@ -9,7 +9,7 @@ use App\Models\ProvidersBusinessesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class FioniksFarmaParser
+class AsterParser
 {
 
     private array $sheetData = [];
@@ -41,6 +41,8 @@ class FioniksFarmaParser
         $spreadsheet = IOFactory::load($file);
         $this->sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
+        //echo '<pre>'; print_r($this->sheetData); die();
+
         //Validate file header
         $this->validateParsedFileHeaders();
 
@@ -60,7 +62,7 @@ class FioniksFarmaParser
         $validRows = 0;
         $invalidRows = 0;
         foreach ($this->sheetData as $rowKey => $row) {
-            if ($rowKey === 1) { // skip header data
+            if ($rowKey < 7 || count($this->sheetData) === $rowKey) { // skip header data
                 continue;
             }
 
@@ -84,85 +86,28 @@ class FioniksFarmaParser
         $headers = $this->sheetData[1];
 
         if (!isset($headers['A'])) {
-            $errors[] = 'Колона А "склад" липсва !';
-        }
-        if (!isset($headers['B'])) {
-            $errors[] = 'Колона B "фирма" липсва !';
-        }
-        if (!isset($headers['C'])) {
-            $errors[] = 'Колона C "клиентски номер" липсва !';
-        }
-        if (!isset($headers['D'])) {
-            $errors[] = 'Колона D "клиент" липсва !';
-        }
-        if (!isset($headers['E'])) {
-            $errors[] = 'Колона E "фактура" липсва !';
+            $errors[] = 'Колона А "АСТЕР РУСЕ ЕООД" липсва !';
         }
         if (!isset($headers['F'])) {
-            $errors[] = 'Колона F "дата" липсва !';
+            $errors[] = 'Колона F "Дневник на продажбите" липсва !';
         }
-        if (!isset($headers['G'])) {
-            $errors[] = 'Колона G "тип" липсва !';
+        if (!isset($headers['O'])) {
+            $errors[] = 'Колона O "Дата и час на разпечатване" липсва !';
         }
-        if (!isset($headers['H'])) {
-            $errors[] = 'Колона H "падеж" липсва !';
-        }
-        if (!isset($headers['I'])) {
-            $errors[] = 'Колона I "вид плащане" липсва !';
-        }
-        if (!isset($headers['J'])) {
-            $errors[] = 'Колона J "стойност" липсва !';
-        }
-        if (!isset($headers['K'])) {
-            $errors[] = 'Колона K "платено" липсва !';
-        }
-
 
         foreach ($headers as $headerKey => $header) {
             $header2 = mb_strtolower($header);
 
-            if ($headerKey === 'A' && $header2 !== 'склад') {
-                $errors[] = 'Колона А трябва да съдържа "склад"';
+            if ($headerKey === 'A' && $header2 !== 'астер русе еоод') {
+                $errors[] = 'Колона А трябва да съдържа "АСТЕР РУСЕ ЕООД"';
             }
 
-            if ($headerKey === 'B' && $header2 !== 'фирма') {
-                $errors[] = 'Колона B трябва да съдържа "фирма"';
+            if ($headerKey === 'F' && $header2 !== 'дневник на продажбите') {
+                $errors[] = 'Колона B трябва да съдържа "Дневник на продажбите"';
             }
 
-            if ($headerKey === 'C' && $header2 !== 'клиентски номер') {
-                $errors[] = 'Колона C трябва да съдържа "клиентски номер"';
-            }
-
-            if ($headerKey === 'D' && $header2 !== 'клиент') {
-                $errors[] = 'Колона D трябва да съдържа "клиент"';
-            }
-
-            if ($headerKey === 'E' && $header2 !== 'фактура') {
-                $errors[] = 'Колона E трябва да съдържа "фактура"';
-            }
-
-            if ($headerKey === 'F' && $header2 !== 'дата') {
-                $errors[] = 'Колона F трябва да съдържа "дата"';
-            }
-
-            if ($headerKey === 'G' && $header2 !== 'тип') {
-                $errors[] = 'Колона G трябва да съдържа "тип"';
-            }
-
-            if ($headerKey === 'H' && $header2 !== 'падеж') {
-                $errors[] = 'Колона H трябва да съдържа "падеж"';
-            }
-
-            if ($headerKey === 'I' && $header2 !== 'вид плащане') {
-                $errors[] = 'Колона I трябва да съдържа "вид плащане"';
-            }
-
-            if ($headerKey === 'J' && $header2 !== 'стойност') {
-                $errors[] = 'Колона J трябва да съдържа "стойност"';
-            }
-
-            if ($headerKey === 'K' && $header2 !== 'платено') {
-                $errors[] = 'Колона K трябва да съдържа "платено"';
+            if ($headerKey === 'O' && $header2 !== 'дата и час на разпечатване') {
+                $errors[] = 'Колона O трябва да съдържа "Дата и час на разпечатване"';
             }
         }
 
@@ -172,7 +117,7 @@ class FioniksFarmaParser
     private function validateParsedFileData(&$parsedInvoicesNumbers)
     {
         foreach ($this->sheetData as $rowKey => $row) {
-            if ($rowKey === 1) { // skip header data
+            if ($rowKey < 7 || count($this->sheetData) === $rowKey) { // skip header data
                 continue;
             }
 
@@ -193,7 +138,7 @@ class FioniksFarmaParser
 
 
             //Validate business
-            $businessName = $row['B'];
+            $businessName = $row['I'];
             $businessId = $this->getBusinessIdByName($businessName);
             if (!$businessId) {
                 $this->sheetData[$rowKey]['status'] = 'error';
@@ -204,21 +149,17 @@ class FioniksFarmaParser
             $this->sheetData[$rowKey]['business_id'] = $businessId;
 
 
-            //Validate company
-            /*
-            $companyClientNumber = $row['C'];
-            $companyName = $row['D'];
-            $companyId = $this->getCompanyIdByClientNumber($businessId, $companyClientNumber);
-            if (!$companyId) {
-                $this->sheetData[$rowKey]['status'] = 'error';
-                $this->sheetData[$rowKey]['status_details'][] = "Аптека $companyName ($companyClientNumber) не е свързана с фирма: $businessName";
-                continue;
-            }
-            $this->sheetData[$rowKey]['company_id'] = $companyId;
-            */
-
             //Validate invoice duplicate
-            $invoiceNumbers = $row['E'];
+            $invoiceNumbers1 = $row['D'];
+            $invoiceNumbers2 = $row['E'];
+
+            if(!empty($invoiceNumbers1)){
+                $check = explode('/', $invoiceNumbers1);
+                $invoiceNumbers = trim($invoiceNumbers1);
+            }else{
+                $invoiceNumbers = $invoiceNumbers2;
+            }
+
             $invoiceValidation = $this->validateInvoiceNumberForDuplication($invoiceNumbers);
             if (!$invoiceValidation || in_array($invoiceNumbers, $parsedInvoicesNumbers)) {
                 $this->sheetData[$rowKey]['status'] = 'error';
@@ -248,9 +189,9 @@ class FioniksFarmaParser
         foreach ($businesses as $businessKey => $business) {
             //Predefine names for validation
             $businesses[$businessKey]['names_for_validation'] = [
-                'name' => str_replace(' ', '', mb_strtolower($business['name'])),
-                'alias_1' => $business['alias_1'] ? str_replace(' ', '', mb_strtolower($business['alias_1'])) : false,
-                'alias_2' => $business['alias_2'] ? str_replace(' ', '', mb_strtolower($business['alias_2'])) : false
+                'name' => str_replace([' ', '"', "'"], '', mb_strtolower($business['name'])),
+                'alias_1' => $business['alias_1'] ? str_replace([' ', '"', "'"], '', mb_strtolower($business['alias_1'])) : false,
+                'alias_2' => $business['alias_2'] ? str_replace([' ', '"', "'"], '', mb_strtolower($business['alias_2'])) : false
             ];
 
             $companies = $businessesCompaniesModel->where('business_id', $business['id'])->findAll();
@@ -266,7 +207,7 @@ class FioniksFarmaParser
     private function getBusinessIdByName(string $businessName)
     {
         foreach ($this->businesses as $business) {
-            $businessName = str_replace(' ', '', mb_strtolower($businessName));
+            $businessName = str_replace([' ', '"', "'"], '', mb_strtolower($businessName));
 
             foreach($business['names_for_validation'] as $businessNameForValidation){
                 if($businessNameForValidation === $businessName){
@@ -326,9 +267,9 @@ class FioniksFarmaParser
 
     private function validateInvoiceNumberForDuplication(string $invoiceNumber): bool
     {
-        $vpjFioniksFarmaEntitiesModel = new VpjFioniksFarmaEntitiesModel();
-        $vpjFioniksFarmaEntity = $vpjFioniksFarmaEntitiesModel->where('invoice', $invoiceNumber)->first();
-        if ($vpjFioniksFarmaEntity) {
+        $vpjAsterEntitiesModel = new VPJFioniksFarmaEntitiesModel();
+        $vpjAsterEntity = $vpjAsterEntitiesModel->where('invoice', $invoiceNumber)->first();
+        if ($vpjAsterEntity) {
             return false;
         }
         return true;
@@ -337,34 +278,37 @@ class FioniksFarmaParser
     private function baseValidation($row)
     {
         if (empty($row['A'])) {
-            return "Липсва склад";
+            return "Липсва 'номер на ред'";
         }
         if (empty($row['B'])) {
-            return "Липсва фирма";
+            return "Липсва 'Вид на документа'";
         }
-        if (empty($row['C'])) {
-            return "Липсва клиентски номер";
-        }
-        if (empty($row['D'])) {
-            return "Липсва клиент";
-        }
-        if (empty($row['E'])) {
-            return "Липсва фактура";
+        if (empty($row['D']) && empty($row['E'])) {
+            return "Липсва 'Номер на документа'";
         }
         if (empty($row['F'])) {
-            return "Липсва дата";
-        }
-        if (empty($row['G'])) {
-            return "Липсва тип";
+            return "Липсва 'дата'";
         }
         if (empty($row['H'])) {
-            return "Липсва падеж";
+            return "Липсва 'ЕИК на контрагента'";
         }
         if (empty($row['I'])) {
-            return "Липсва вид плащане";
+            return "Липсва 'Име на контрагента'";
         }
-        if (empty($row['J'])) {
-            return "Липсва стойност";
+        if (empty($row['L'])) {
+            return "Липсва 'Предмет на сделката'";
+        }
+        if (empty($row['M'])) {
+            return "Липсва 'Обща с-ст на сделката (вкл. ДДС)'";
+        }
+        if (empty($row['N'])) {
+            return "Липсва 'Ст-ст на облаг. сделки'";
+        }
+        if (empty($row['O'])) {
+            return "Липсва 'ДДС на облаг. сделки'";
+        }
+        if (empty($row['P'])) {
+            return "Липсва 'Ст-ст по пок. цени'";
         }
 
         return true;

@@ -16,6 +16,9 @@
                         <th>ID</th>
                         <th>Доставчик</th>
                         <th>Файл</th>
+                        <th>Записи</th>
+                        <th>Успешни</th>
+                        <th>Грешни</th>
                         <th>Дата на добавяне</th>
                         <th>Действия</th>
                     </tr>
@@ -26,6 +29,9 @@
                                 <td><?= $item['id'] ?></td>
                                 <td><?= $item['provider_name'] ?></td>
                                 <td><?= $item['file_name'] ?></td>
+                                <td><?= $item['entities_total'] ?></td>
+                                <td class="text-success"><?= $item['entities_success'] ?></td>
+                                <td class="text-danger"><?= $item['entities_error'] ?></td>
                                 <td><?= $item['created_at'] ?></td>
                                 <td>
                                     <a href="<?= base_url('vat-purchase-journals/view/' . $item['id']) ?>" class="btn btn-primary btn-icon-split btn-sm mr-3">

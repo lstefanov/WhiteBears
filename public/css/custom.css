@@ -1,0 +1,9 @@
+.data-table-export thead th{
+    background: #FFFE99;
+}
+
+.data-table-export tbody td:nth-child(7),
+.data-table-export tbody td:nth-child(8),
+.data-table-export tbody td:nth-child(9){
+    background: #01B1F0;
+}

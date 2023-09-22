@@ -34,3 +34,4 @@ $routes->get('/vat-purchase-journals/download/(:any)', 'VatPurchaseJournals\Hist
 
 
 $routes->get('/vat-purchase-journals/export/view/', 'VatPurchaseJournals\Export::view/', ['filter' => 'authFilter']);
+$routes->get('/vat-purchase-journals/export/export/', 'VatPurchaseJournals\Export::export/', ['filter' => 'authFilter']);

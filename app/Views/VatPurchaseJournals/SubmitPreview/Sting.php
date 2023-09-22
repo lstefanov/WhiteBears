@@ -45,11 +45,6 @@
                         </ul>
                     <?php }else{ ?>
                         <span class="text-success">Успешно</span>
-                        <small style="margin-left: 10px; color: #666;">(
-                            общо: <strong style="color: #000;"><?= $data['entities_statistics']['total'] ?></strong> |
-                            успешни: <strong class="text-success"><?= $data['entities_statistics']['success'] ?></strong> |
-                            грешни: <strong class="text-danger"><?= $data['entities_statistics']['error'] ?></strong>
-                        )</small>
                     <?php } ?>
                 </h6>
             </div>
@@ -59,7 +54,7 @@
                     <thead>
                         <tr>
                             <th>Ред</th>
-                            <?php foreach ($data['parsedData'][1] as $headerKey => $header){ ?>
+                            <?php foreach ($data['parsedData'][4] as $headerKey => $header){ ?>
                                 <th><?= "{$headerKey} | {$header}" ?></th>
                             <?php } ?>
                             <?php if(empty($data['errors']) || $data['errorType'] === 2){ ?>
@@ -69,7 +64,7 @@
                     </thead>
                     <tbody>
                         <?php foreach ($data['parsedData'] as $parsedDataKey => $parsedDataValue){ ?>
-                            <?php if($parsedDataKey === 1){ continue; } ?>
+                            <?php if($parsedDataKey < 5 || count($data['parsedData']) === $parsedDataKey){ continue; } ?>
                             <tr>
                                 <td><?= $parsedDataKey ?></td>
                                 <?php foreach ($parsedDataValue as $entityValueKey => $entityValue){ ?>

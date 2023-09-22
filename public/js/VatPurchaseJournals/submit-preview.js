@@ -3,6 +3,22 @@ let vatPurchaseJournalsSubmitPreview;
 class VatPurchaseJournalsSubmitPreview {
     constructor() {
         this.dataTables();
+        this.events();
+    }
+
+    events() {
+        $('#finish-btn').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if($(this).hasClass('btn-secondary')){
+                return false;
+            }
+
+            let url = $(this).attr('href');
+
+            $(this).removeClass('btn-primary').addClass('btn-secondary').html('обработване...').attr('disabled', true);
+            window.location.href = url;
+        });
     }
 
     dataTables() {

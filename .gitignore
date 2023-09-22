@@ -10,3 +10,6 @@
 /writable/uploads/vat-purchase-journals/*
 !/writable/uploads/vat-purchase-journals/index.html
 
+/writable/uploads/tmp/*
+!/writable/uploads/tmp/index.html
+

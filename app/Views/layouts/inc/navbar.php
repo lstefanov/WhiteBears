@@ -20,12 +20,22 @@
         </a>
     </li>
 
-    <!-- Nav Item - Charts -->
+    <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+           aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-chart-area"></i>
-            <span>Дневници за покупки по ЗДДС</span></a>
+            <span>Дневници за покупки по ЗДДС</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="<?= base_url('/vat-purchase-journals/add') ?>">Добвяне на фактури</a>
+                <a class="collapse-item" href="<?= base_url('vat-purchase-journals/history') ?>">Списък</a>
+                <a class="collapse-item" href="<?= base_url('vat-purchase-journals/export/view') ?>">Изтегляне</a>
+            </div>
+        </div>
     </li>
+
 
     <!-- Nav Item - Tables -->
     <li class="nav-item">

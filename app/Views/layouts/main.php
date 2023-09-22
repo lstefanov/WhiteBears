@@ -14,8 +14,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link href="<?= base_url('css/libraries/datatables/dataTables.bootstrap4.min.css') ?>" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" />
 
     <link rel="stylesheet" href="<?= base_url('css/sb-admin-2.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/custom.css'); ?>">
 </head>
 <body>
 
@@ -48,6 +50,7 @@
 
 <script src="<?= base_url('js/libraries/jquery/jquery.min.js'); ?>"></script>
 <script src="<?= base_url('js/libraries/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 <script src="<?= base_url('js/libraries/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<?= base_url('js/libraries/datatables/dataTables.bootstrap4.min.js'); ?>"></script>

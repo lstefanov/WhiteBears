@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Обработка</button>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">Обработка</button>
                         </div>
 
 

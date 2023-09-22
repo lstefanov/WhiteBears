@@ -4,26 +4,31 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class VatPurchaseJournalsModel extends Model
+class VPJAsterEntitiesModel extends Model
 {
     protected $DBGroup = 'default';
-    protected $table = 'vat_purchase_journals';
+    protected $table = 'vpj_aster_entities';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
     protected $allowedFields = [
+        'vat_purchase_journals_id',
         'provider_id',
-        'uuid',
-        'file_name',
-        'file_type',
-        'file_size',
-        'file_location',
-        'entities_total',
-        'entities_success',
-        'entities_error',
-        'created_at',
+        'business_id',
+        'status',
+        'status_details',
+        'export_date',
+        'invoice',
+        'invoice_date',
+        'eik',
+        'business_name',
+        'subject_of_the_transaction',
+        'total_price_inc_vat',
+        'price_without_vat',
+        'price_vat',
+        'price_purchase'
     ];
 
     // Dates
@@ -49,14 +54,4 @@ class VatPurchaseJournalsModel extends Model
     protected $afterFind = [];
     protected $beforeDelete = [];
     protected $afterDelete = [];
-
-    public function getHistory(): array
-    {
-        $this->select('vat_purchase_journals.*, providers.name as provider_name');
-        $this->join('providers', 'providers.id = vat_purchase_journals.provider_id');
-        //$this->where(...);
-        $this->orderBy('vat_purchase_journals.created_at', 'desc');
-        return $this->findAll();
-
-    }
 }

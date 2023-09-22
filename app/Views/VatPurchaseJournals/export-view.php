@@ -4,11 +4,31 @@
 
     <div class="card shadow mb-5">
         <div class="card-header py-3">
-            <h5>Преглед</h5>
+            <h5 style="float: left; margin-right: 100px;">Преглед</h5>
+
+            <span style="float: left; padding-right: 10px; padding-top: 2px;">Фирма:</span>
+            <select name="business_id" id="business-id" class="form-select form-select-sm" style="float: left; margin-right: 20px; padding-top: 2px; width: 200px;">
+                <option value="0">- изберете фирма -</option>
+                <?php foreach ($businesses as $business){ ?>
+                    <option value="<?= $business['id'] ?>" <?php echo ($selectedBusinessId === $business['id']) ? 'selected' : ''; ?>><?= $business['name'] ?></option>
+                <?php } ?>
+            </select>
+
+            <span style="float: left; padding-right: 10px; padding-top: 2px;">Дата:</span>
+            <input type="text" id="export-date-filter" class="form-control form-control-sm" value="<?= $date ?>" style="width: 100px; float: left; margin-right: 20px;" />
+
+            <button type="button" class="btn bt-sm btn-success" style="float: left; padding: 4px 10px; font-size: 14px;" id="view-btn">Преглед</button>
+
+            <button type="button" class="btn bt-sm btn-primary" style="float: right; margin-right 10px;" id="export-date-filter-btn">Експортиране</button>
         </div>
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered dataTable" width="100%" cellspacing="0">
+            <?php if($selectedBusinessId === 0){ ?>
+                <div class="alert alert-warning" role="alert">
+                    Моля изберете фирма !
+                </div>
+            <?php }else{ ?>
+                <div class="table-responsive">
+                <table class="table table-bordered dataTable data-table-export" width="100%" cellspacing="0">
                     <thead>
                     <tr>
                         <th>Тип документ</th>
@@ -58,6 +78,7 @@
                     </tbody>
                 </table>
             </div>
+            <?php } ?>
         </div>
     </div>
 
