@@ -5,9 +5,9 @@
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Преглед на добавените фактури</h1>
     <?php if(count($parsedData) > 1){ ?>
-        <p class="mb-4">Добавени са <strong><?= count($parsedData); ?></strong> фактури за доставчик <strong>Фьоникс Фарма</strong></p>
+        <p class="mb-4">Добавени са <strong><?= count($parsedData); ?></strong> фактури за доставчик <strong>Астер Русе ЕООД</strong></p>
     <?php }else{ ?>
-        <p class="mb-4">Добавена е <strong>1</strong> фактура за доставчик <strong>Фьоникс Фарма</strong></p>
+        <p class="mb-4">Добавена е <strong>1</strong> фактура за доставчик <strong>Астер Русе ЕООД</strong></p>
     <?php } ?>
 
 
@@ -45,6 +45,11 @@
                         </ul>
                     <?php }else{ ?>
                         <span class="text-success">Успешно</span>
+                        <small style="margin-left: 10px; color: #666;">(
+                            общо: <strong style="color: #000;"><?= $data['entities_statistics']['total'] ?></strong> |
+                            успешни: <strong class="text-success"><?= $data['entities_statistics']['success'] ?></strong> |
+                            грешни: <strong class="text-danger"><?= $data['entities_statistics']['error'] ?></strong>
+                            )</small>
                     <?php } ?>
                 </h6>
             </div>
@@ -54,9 +59,16 @@
                     <thead>
                         <tr>
                             <th>Ред</th>
-                            <?php foreach ($data['parsedData'][4] as $headerKey => $header){ ?>
-                                <th><?= "{$headerKey} | {$header}" ?></th>
-                            <?php } ?>
+                            <th>Вид на документа</th>
+                            <th>Номер на документа</th>
+                            <th>Дата на издаване</th>
+                            <th>ЕИК</th>
+                            <th>Контрагент</th>
+                            <th>Предмет на сделката</th>
+                            <th>Обща с-ст на сделката (вкл. ДДС)</th>
+                            <th>Ст-ст на облаг. сделки</th>
+                            <th>ДДС</th>
+                            <th>Ст-ст по пок. цени</th>
                             <?php if(empty($data['errors']) || $data['errorType'] === 2){ ?>
                                 <th>Валидация</th>
                             <?php } ?>
@@ -64,15 +76,32 @@
                     </thead>
                     <tbody>
                         <?php foreach ($data['parsedData'] as $parsedDataKey => $parsedDataValue){ ?>
-                            <?php if($parsedDataKey < 5 || count($data['parsedData']) === $parsedDataKey){ continue; } ?>
+                            <?php if($parsedDataKey < 7 || count($data['parsedData']) === $parsedDataKey){ continue; } ?>
                             <tr>
                                 <td><?= $parsedDataKey ?></td>
-                                <?php foreach ($parsedDataValue as $entityValueKey => $entityValue){ ?>
+                                <td><?= $parsedDataValue['B'] ?></td>
+                                <td>
+                                    <?php
+                                        $invoiceNumbers1 = $parsedDataValue['D'];
+                                        $invoiceNumbers2 = $parsedDataValue['E'];
 
-                                    <?php if(in_array($entityValueKey, ['status', 'status_details', 'business_id', 'company_id'])){ continue; } ?>
-
-                                    <td><?= $entityValue ?></td>
-                                <?php } ?>
+                                        if(!empty($invoiceNumbers1)){
+                                            $check = explode('/', $invoiceNumbers1);
+                                            $invoiceNumbers = trim($check[0]);
+                                        }else{
+                                            $invoiceNumbers = $invoiceNumbers2;
+                                        }
+                                        echo $invoiceNumbers;
+                                    ?>
+                                </td>
+                                <td><?= $parsedDataValue['F'] ?></td>
+                                <td><?= $parsedDataValue['H'] ?></td>
+                                <td><?= $parsedDataValue['I'] ?></td>
+                                <td><?= $parsedDataValue['L'] ?></td>
+                                <td><?= $parsedDataValue['M'] ?></td>
+                                <td><?= $parsedDataValue['N'] ?></td>
+                                <td><?= $parsedDataValue['O'] ?></td>
+                                <td><?= $parsedDataValue['P'] ?></td>
                                 <?php if(empty($data['errors']) || $data['errorType'] === 2){ ?>
                                     <td>
                                         <?php if($parsedDataValue['status'] === 'success'){ ?>

@@ -7,6 +7,7 @@ use App\Models\BusinessesModel;
 use App\Models\CompaniesModel;
 use App\Models\ProvidersBusinessesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class AsterParser
@@ -24,6 +25,8 @@ class AsterParser
         'error' => 0
     ];
 
+    public string $dateUntil = '';
+
     /**
      * @var int
      * 1 - mean it has file error
@@ -32,14 +35,18 @@ class AsterParser
     public int $errorType = 1;
 
 
+    /**
+     * @throws Exception
+     */
     public function execute(string $file, array &$parsedInvoicesNumbers): array
     {
         //collect businesses linked with this provider
-        $this->getBusinessesDetails(2);
+        $this->getBusinessesDetails(3);
 
         //Parse file
         $spreadsheet = IOFactory::load($file);
-        $this->sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        //parse first sheet
+        $this->sheetData = $spreadsheet->getSheet(0)->toArray(null, true, true, true);
 
         //echo '<pre>'; print_r($this->sheetData); die();
 
@@ -48,6 +55,7 @@ class AsterParser
 
         //Validate file data
         if (empty($this->errors)) {
+            $this->getDateUntil();
             $this->validateParsedFileData($parsedInvoicesNumbers);
 
             $this->validateForValidRows();
@@ -55,6 +63,17 @@ class AsterParser
 
 
         return $this->sheetData;
+    }
+
+    private function getDateUntil()
+    {
+        $date = $this->sheetData[3]['L'];
+        $date = str_replace(' г.', '', $date);
+
+        //create date from format d.m.Y
+        $date = \DateTime::createFromFormat('d.m.Y', $date);
+        $date = $date->format('Y-m-d');
+        $this->dateUntil = $date;
     }
 
     private function validateForValidRows()
@@ -155,7 +174,7 @@ class AsterParser
 
             if(!empty($invoiceNumbers1)){
                 $check = explode('/', $invoiceNumbers1);
-                $invoiceNumbers = trim($invoiceNumbers1);
+                $invoiceNumbers = trim($check[0]);
             }else{
                 $invoiceNumbers = $invoiceNumbers2;
             }
@@ -307,9 +326,9 @@ class AsterParser
         if (empty($row['O'])) {
             return "Липсва 'ДДС на облаг. сделки'";
         }
-        if (empty($row['P'])) {
+        /*if (empty($row['P'])) {
             return "Липсва 'Ст-ст по пок. цени'";
-        }
+        }*/
 
         return true;
     }

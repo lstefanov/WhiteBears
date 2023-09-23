@@ -10,6 +10,7 @@ class VatPurchaseJournalsHistoryView {
             // set default table lenght to 25
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Всички"]],
             "pageLength": 50,
+            "aaSorting": [],
 
             language: {
                 url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/bg.json',

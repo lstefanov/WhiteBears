@@ -4,6 +4,7 @@ namespace App\Controllers\VatPurchaseJournals;
 
 use App\Controllers\BaseController;
 use App\Models\VatPurchaseJournalsModel;
+use App\Models\VPJAsterEntitiesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use App\Models\VPJStingEntitiesModel;
 use Config\Services;
@@ -54,6 +55,13 @@ class History extends BaseController
             $this->viewData['vpjFioniksFarmaEntities'] = $vpjFioniksFarmaEntitiesModel->where('vat_purchase_journals_id', $vpjId)->orderBy('id', 'asc')->findAll();
 
             return view('VatPurchaseJournals/History/history-view-fioniks-farma', $this->viewData);
+        } elseif((int)$vpJDetails['provider_id'] === 3){
+            $this->viewData['vpjDetails'] = $vpJDetails;
+
+            $vpjAsterEntitiesModel = new VPJAsterEntitiesModel();
+            $this->viewData['vpjAsterEntitiesModel'] = $vpjAsterEntitiesModel->where('vat_purchase_journals_id', $vpjId)->orderBy('id', 'asc')->findAll();
+
+            return view('VatPurchaseJournals/History/history-view-aster', $this->viewData);
         }
 
         die('Invalid provider!');
@@ -73,6 +81,9 @@ class History extends BaseController
         } elseif((int)$vpJDetails['provider_id'] === 2){
             $vpjFioniksFarmaEntitiesModel = new VPJFioniksFarmaEntitiesModel();
             $vpjFioniksFarmaEntitiesModel->where('vat_purchase_journals_id', $vpjId)->delete();
+        } elseif((int)$vpJDetails['provider_id'] === 3){
+            $vpjAsterEntitiesModel = new VPJAsterEntitiesModel();
+            $vpjAsterEntitiesModel->where('vat_purchase_journals_id', $vpjId)->delete();
         }
 
         $vatPurchaseJournalsModel->delete($vpjId);

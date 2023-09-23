@@ -5,9 +5,9 @@
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Преглед на добавените фактури</h1>
     <?php if(count($parsedData) > 1){ ?>
-        <p class="mb-4">Добавени са <strong><?= count($parsedData); ?></strong> фактури за доставчик <strong>Фьоникс Фарма</strong></p>
+        <p class="mb-4">Добавени са <strong><?= count($parsedData); ?></strong> фактури за доставчик <strong>Стинг АД</strong></p>
     <?php }else{ ?>
-        <p class="mb-4">Добавена е <strong>1</strong> фактура за доставчик <strong>Фьоникс Фарма</strong></p>
+        <p class="mb-4">Добавена е <strong>1</strong> фактура за доставчик <strong>Стинг АД</strong></p>
     <?php } ?>
 
 
@@ -45,6 +45,11 @@
                         </ul>
                     <?php }else{ ?>
                         <span class="text-success">Успешно</span>
+                        <small style="margin-left: 10px; color: #666;">(
+                            общо: <strong style="color: #000;"><?= $data['entities_statistics']['total'] ?></strong> |
+                            успешни: <strong class="text-success"><?= $data['entities_statistics']['success'] ?></strong> |
+                            грешни: <strong class="text-danger"><?= $data['entities_statistics']['error'] ?></strong>
+                            )</small>
                     <?php } ?>
                 </h6>
             </div>

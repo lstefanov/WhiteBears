@@ -5,6 +5,7 @@ namespace App\Controllers\VatPurchaseJournals;
 use App\Controllers\BaseController;
 use App\Models\BusinessesModel;
 use App\Models\VatPurchaseJournalsModel;
+use App\Models\VPJAsterEntitiesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use App\Models\VPJStingEntitiesModel;
 use Config\Services;
@@ -81,7 +82,7 @@ class Export extends BaseController
     {
         $data = [];
 
-        if($selectedBusinessId === 0 ){
+        if ($selectedBusinessId === 0) {
             return $data;
         }
 
@@ -92,13 +93,20 @@ class Export extends BaseController
         $last->modify('last day of this month');
         $dateLastDayOfTheMonth = $last->format('Y-m-d');
 
+
+        //get first day of the month for param $date
+        $first = new \DateTime($date);
+        $first->modify('first day of this month');
+        $dateFirstDayOfTheMonth = $first->format('Y-m-d');
+
         $vpjFioniksFarmaEntitiesModel = new VPJFioniksFarmaEntitiesModel();
-        $vpjFioniksFarmaEntities = $vpjFioniksFarmaEntitiesModel->where('export_date', $date)->where('status', 'success')->where('business_id', $selectedBusinessId
+        $vpjFioniksFarmaEntities = $vpjFioniksFarmaEntitiesModel->where('export_date', $date)->where('status',
+            'success')->where('business_id', $selectedBusinessId
         )->orderBy('invoice_date', 'asc')->findAll();
 
         foreach ($vpjFioniksFarmaEntities as $vpjFioniksFarmaEntity) {
             $h_doc_type = '901';
-            if(strpos(mb_strtolower($vpjFioniksFarmaEntity['invoice_type']), 'корекционна') !== false){
+            if (strpos(mb_strtolower($vpjFioniksFarmaEntity['invoice_type']), 'корекционна') !== false) {
                 $h_doc_type = 904;
             }
 
@@ -108,8 +116,8 @@ class Export extends BaseController
                 'h_doc_no' => $vpjFioniksFarmaEntity['invoice'],
                 'h_doc_date' => date('d-m-Y', strtotime($vpjFioniksFarmaEntity['invoice_date'])),
                 'h_doc_valeur' => date('d-m-Y', strtotime($dateLastDayOfTheMonth)),
-                'd_net_value' => number_format( ($vpjFioniksFarmaEntity['payment_summary'] * 100 / 120), 2, '.', ''),
-                'd_vat_value' => number_format( ($vpjFioniksFarmaEntity['payment_summary'] * 20 / 120), 2, '.', ''),
+                'd_net_value' => number_format(($vpjFioniksFarmaEntity['payment_summary'] * 100 / 120), 2, '.', ''),
+                'd_vat_value' => number_format(($vpjFioniksFarmaEntity['payment_summary'] * 20 / 120), 2, '.', ''),
                 'd_partner_type' => 11,
                 'd_partner' => 502,
                 'd_23' => 305,
@@ -121,16 +129,17 @@ class Export extends BaseController
         }
 
 
-
         $vpjStingEntitiesModel = new VPJStingEntitiesModel();
-        $vpjStingEntities = $vpjStingEntitiesModel->where('export_date', $date)->where('status', 'success')->where('business_id', $selectedBusinessId
+        $vpjStingEntities = $vpjStingEntitiesModel->where('export_date', $date)->where('status',
+            'success')->where('business_id', $selectedBusinessId
         )->orderBy('doc_date', 'asc')->findAll();
 
         foreach ($vpjStingEntities as $vpjStingEntity) {
             $businessEntity = $businessModel->find($vpjStingEntity['business_id']);
 
             $h_doc_type = '901';
-            if(strpos(mb_strtolower($vpjStingEntity['doc_type']), '3096') !== false || strpos(mb_strtolower($vpjStingEntity['doc_type']), '3090') !== false){
+            if (strpos(mb_strtolower($vpjStingEntity['doc_type']),
+                    '3096') !== false || strpos(mb_strtolower($vpjStingEntity['doc_type']), '3090') !== false) {
                 $h_doc_type = 904;
             }
 
@@ -142,8 +151,8 @@ class Export extends BaseController
                 'h_doc_no' => $vpjStingEntity['doc_n'],
                 'h_doc_date' => $h_doc_date,
                 'h_doc_valeur' => date('d-m-Y', strtotime($dateLastDayOfTheMonth)),
-                'd_net_value' => number_format( ($vpjStingEntity['payment_summary'] * 100 / 120), 2, '.', ''),
-                'd_vat_value' => number_format( ($vpjStingEntity['payment_summary'] * 20 / 120), 2, '.', ''),
+                'd_net_value' => number_format(($vpjStingEntity['payment_summary'] * 100 / 120), 2, '.', ''),
+                'd_vat_value' => number_format(($vpjStingEntity['payment_summary'] * 20 / 120), 2, '.', ''),
                 'd_partner_type' => 11,
                 'd_partner' => 501,
                 'd_23' => 405,
@@ -154,6 +163,46 @@ class Export extends BaseController
             $data[] = $entity;
         }
 
+
+        $vpjAsterEntitiesModel = new VPJAsterEntitiesModel();
+        $vpjAsterEntities = $vpjAsterEntitiesModel
+            ->where('export_date', $date)
+            ->where('status', 'success')
+            ->where('business_id', $selectedBusinessId)
+            ->orderBy('invoice_date', 'asc')
+            ->findAll();
+
+        foreach ($vpjAsterEntities as $vpjAsterEntity) {
+            $businessEntity = $businessModel->find($vpjAsterEntity['business_id']);
+
+            $h_doc_type = '901';
+            if ($vpjAsterEntity['total_price_inc_vat'] < 0) {
+                $h_doc_type = 904;
+            }
+
+            //create date from format m/d/Y
+            $h_doc_date = date('Y-m-d', strtotime($vpjAsterEntity['invoice_date']));
+            if($h_doc_date < $dateFirstDayOfTheMonth){
+                $h_doc_date = $dateLastDayOfTheMonth;
+            }
+
+
+            $entity = [
+                'h_doc_type' => $h_doc_type,
+                'h_doc_no' => $vpjAsterEntity['invoice'],
+                'h_doc_date' => date('d-m-Y', strtotime($h_doc_date)),
+                'h_doc_valeur' => date('d-m-Y', strtotime($dateLastDayOfTheMonth)),
+                'd_net_value' => number_format($vpjAsterEntity['price_without_vat'], 2, '.', ''),
+                'd_vat_value' => number_format($vpjAsterEntity['price_vat'], 2, '.', ''),
+                'd_partner_type' => 13,
+                'd_partner' => 500,
+                'd_23' => '000',
+                'd_24' => $businessEntity['name'],
+                'd_$18' => '02',
+            ];
+
+            $data[] = $entity;
+        }
 
 
         return $data;

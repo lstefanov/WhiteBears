@@ -13,8 +13,6 @@ class VatPurchaseJournalsExportView {
             startView: "months",
             minViewMode: "months",
         }).on('changeDate', function (ev) {
-            //let date = $("#export-date-filter").val();
-               //window.location.href = "/vat-purchase-journals/export/view/?date=" + date;
         });
 
     }
@@ -66,7 +64,6 @@ class VatPurchaseJournalsExportView {
             }
 
             let url = `/vat-purchase-journals/export/export/?date=${date}&business_id=${businessId}`;
-            //open url in new tab
             window.open(url, '_blank');
         });
     }

@@ -10,6 +10,7 @@ use App\Models\BusinessesModel;
 use App\Models\ProvidersBusinessesModel;
 use App\Models\ProvidersModel;
 use App\Models\VatPurchaseJournalsModel;
+use App\Models\VPJAsterEntitiesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use App\Models\VPJStingEntitiesModel;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -122,6 +123,8 @@ class Add extends BaseController
             $this->finishSting();
         } elseif ($provider === 2) {
             $this->finishFioniksFarma();
+        } elseif ($provider === 3) {
+            $this->finishAster();
         }
 
         return redirect()->to('/vat-purchase-journals/done');
@@ -177,6 +180,7 @@ class Add extends BaseController
             $parsedData[$fileKey]['parsedData'] = $parser->execute($_FILES['files']['tmp_name'][$fileKey], $parsedInvoicesNumbers);
             $parsedData[$fileKey]['errors'] = $parser->errors;
             $parsedData[$fileKey]['entities_statistics'] = $parser->entitiesStatistics;
+            $parsedData[$fileKey]['date_until'] = $parser->dateUntil;
             $parsedData[$fileKey]['errorType'] = $parser->errorType;
             $parsedData[$fileKey]['fileName'] = $fileName;
             $parsedData[$fileKey]['fileType'] = $_FILES['files']['type'][$fileKey];
@@ -229,6 +233,99 @@ class Add extends BaseController
 
         return $parsedData;
     }
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function finishAster()
+    {
+        $vatPurchaseJournalsModel = new VatPurchaseJournalsModel();
+        $vPJAsterEntitiesModel = new VPJAsterEntitiesModel();
+        $parsedData = $this->session->get('parsedData');
+
+        foreach ($parsedData as $data) {
+            if (!empty($data['errors'])) {
+                continue;
+            }
+
+            //Set uploaded file paths
+            $uploadFileName = $data['uuid'] . '.' . pathinfo($data['fileName'], PATHINFO_EXTENSION);
+            $uploadedFileDirRootLocation = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR;
+            $uploadedFileDirSubLocation = 'vat-purchase-journals' . DIRECTORY_SEPARATOR . date('Y-m') . DIRECTORY_SEPARATOR;
+
+            if (!is_dir($uploadedFileDirRootLocation . $uploadedFileDirSubLocation)) {
+                mkdir($uploadedFileDirRootLocation . $uploadedFileDirSubLocation, 0777, true);
+            }
+
+            //Move file
+            @rename($data['fileTmpName'], $uploadedFileDirRootLocation . $uploadedFileDirSubLocation . $uploadFileName);
+
+            //Create record in invoice table
+            $invoiceData = [
+                'provider_id' => 3,
+                'uuid' => $data['uuid'],
+                'file_name' => $data['fileName'],
+                'file_type' => $data['fileType'],
+                'file_size' => $data['fileSize'],
+                'file_location' => $uploadedFileDirSubLocation . $uploadFileName,
+                'entities_total' => $data['entities_statistics']['total'],
+                'entities_success' => $data['entities_statistics']['success'],
+                'entities_error' => $data['entities_statistics']['error'],
+                'created_at' => date('Y-m-d H:i:s'),
+
+            ];
+            $vatPurchaseJournalsModel->insert($invoiceData);
+            $vatPurchaseJournalId = $vatPurchaseJournalsModel->getInsertID();
+
+            foreach ($data['parsedData'] as $parsedDataKey => $parsedDataValue) {
+                if ($parsedDataKey < 7 || count($data['parsedData']) === $parsedDataKey) {
+                    continue;
+                }
+
+                //Set invoice number
+                $invoiceNumbers1 = $parsedDataValue['D'];
+                $invoiceNumbers2 = $parsedDataValue['E'];
+
+                if(!empty($invoiceNumbers1)){
+                    $check = explode('/', $invoiceNumbers1);
+                    $invoiceNumbers = trim($check[0]);
+                }else{
+                    $invoiceNumbers = $invoiceNumbers2;
+                }
+
+                //Set export Date
+                $_exportDate = $parsedDataValue['F'];
+                $_exportDate = date('Y-m-d', strtotime($_exportDate));
+
+                if($_exportDate < $data['date_until']) {
+                    $_exportDate = $data['date_until'];
+                }
+
+                $parsedDataEntity = [
+                    'vat_purchase_journals_id' => $vatPurchaseJournalId,
+                    'provider_id' => 3,
+                    'business_id' => $parsedDataValue['business_id'],
+                    'company_id' => $parsedDataValue['company_id'] ?? 0,
+                    'status' => $parsedDataValue['status'],
+                    'status_details' => implode(',', $parsedDataValue['status_details']),
+                    'export_date' => date('Y-m', strtotime($_exportDate)),
+                    'invoice' => $invoiceNumbers,
+                    'invoice_date' => $parsedDataValue['F'],
+                    'eik' => $parsedDataValue['H'],
+                    'business_name' => $parsedDataValue['I'],
+                    'subject_of_the_transaction' => $parsedDataValue['L'],
+                    'total_price_inc_vat' => $parsedDataValue['M'],
+                    'price_without_vat' => $parsedDataValue['N'],
+                    'price_vat' => $parsedDataValue['O'],
+                    'price_purchase' => $parsedDataValue['P'],
+                ];
+
+                $vPJAsterEntitiesModel->insert($parsedDataEntity);
+            }
+
+        }
+    }
+
 
     /**
      * @throws \ReflectionException
@@ -355,7 +452,7 @@ class Add extends BaseController
 
                 $parsedDataEntity = [
                     'vat_purchase_journals_id' => $vatPurchaseJournalId,
-                    'provider_id' => 2,
+                    'provider_id' => 1,
                     'business_id' => $parsedDataValue['business_id'],
                     'company_id' => $parsedDataValue['company_id'] ?? 0,
                     'status' => $parsedDataValue['status'],
