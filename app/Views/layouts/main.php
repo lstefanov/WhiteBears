@@ -55,6 +55,7 @@
 <script src="<?= base_url('js/libraries/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<?= base_url('js/libraries/datatables/dataTables.bootstrap4.min.js'); ?>"></script>
 <script src="<?= base_url('js/sb-admin-2.js'); ?>"></script>
+<script src="<?= base_url('js/core.js'); ?>"></script>
 
 <?php if(isset($assets['js'])){ ?>
     <script src="<?= base_url('js/' . $assets['js']); ?>"></script>

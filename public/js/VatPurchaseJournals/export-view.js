@@ -9,6 +9,7 @@ class VatPurchaseJournalsExportView {
 
     datePicker() {
         $("#export-date-filter").datepicker({
+            language: "bg",
             format: "yyyy-mm",
             startView: "months",
             minViewMode: "months",
@@ -41,7 +42,7 @@ class VatPurchaseJournalsExportView {
                 return;
             }
 
-            if (!businessId) {
+            if (!businessId || parseInt(businessId) === 0) {
                 alert('Моля, въведете фирма!');
                 return;
             }
