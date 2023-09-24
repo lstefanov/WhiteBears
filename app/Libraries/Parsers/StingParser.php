@@ -8,6 +8,7 @@ use App\Models\CompaniesModel;
 use App\Models\ProvidersBusinessesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use App\Models\VPJStingEntitiesModel;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class StingParser
@@ -31,11 +32,14 @@ class StingParser
     ];
 
 
+    /**
+     * @throws Exception
+     */
     public function execute(string $file, array &$parsedInvoicesNumbers, int $businessId): array
     {
         //Parse file
         $spreadsheet = IOFactory::load($file);
-        $this->sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        $this->sheetData =$spreadsheet->getSheet(0)->toArray(null, true, true, true);
 
         //Validate file header
         $this->validateParsedFileHeaders();

@@ -7,6 +7,7 @@ use App\Models\BusinessesModel;
 use App\Models\CompaniesModel;
 use App\Models\ProvidersBusinessesModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
+use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class FioniksFarmaParser
@@ -32,6 +33,9 @@ class FioniksFarmaParser
     public int $errorType = 1;
 
 
+    /**
+     * @throws Exception
+     */
     public function execute(string $file, array &$parsedInvoicesNumbers): array
     {
         //collect businesses linked with this provider
@@ -39,7 +43,7 @@ class FioniksFarmaParser
 
         //Parse file
         $spreadsheet = IOFactory::load($file);
-        $this->sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        $this->sheetData = $spreadsheet->getSheet(0)->toArray(null, true, true, true);
 
         //Validate file header
         $this->validateParsedFileHeaders();
