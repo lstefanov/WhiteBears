@@ -141,7 +141,7 @@ class Export extends BaseController
 
             $entity = [
                 'h_doc_type' => $h_doc_type,
-                'h_doc_no' => $vpjFioniksFarmaEntity['invoice'],
+                'h_doc_no' => $this->fixDocNo((string)$vpjFioniksFarmaEntity['invoice']),
                 'h_doc_date' => date($dateFormat, strtotime($vpjFioniksFarmaEntity['invoice_date'])),
                 'h_doc_valeur' => date($dateFormat, strtotime($dateLastDayOfTheMonth)),
                 'd_net_value' => number_format(($vpjFioniksFarmaEntity['payment_summary'] * 100 / 120), 2, '.', ''),
@@ -176,7 +176,7 @@ class Export extends BaseController
 
             $entity = [
                 'h_doc_type' => $h_doc_type,
-                'h_doc_no' => $vpjStingEntity['doc_n'],
+                'h_doc_no' => $this->fixDocNo((string)$vpjStingEntity['doc_n']),
                 'h_doc_date' => $h_doc_date,
                 'h_doc_valeur' => date($dateFormat, strtotime($dateLastDayOfTheMonth)),
                 'd_net_value' => number_format(($vpjStingEntity['payment_summary'] * 100 / 120), 2, '.', ''),
@@ -210,14 +210,14 @@ class Export extends BaseController
 
             //create date from format m/d/Y
             $h_doc_date = date('Y-m-d', strtotime($vpjAsterEntity['invoice_date']));
-            if($h_doc_date < $dateFirstDayOfTheMonth){
+            if ($h_doc_date < $dateFirstDayOfTheMonth) {
                 $h_doc_date = $dateLastDayOfTheMonth;
             }
 
 
             $entity = [
                 'h_doc_type' => $h_doc_type,
-                'h_doc_no' => $vpjAsterEntity['invoice'],
+                'h_doc_no' => $this->fixDocNo((string)$vpjAsterEntity['invoice']),
                 'h_doc_date' => date($dateFormat, strtotime($h_doc_date)),
                 'h_doc_valeur' => date($dateFormat, strtotime($dateLastDayOfTheMonth)),
                 'd_net_value' => number_format($vpjAsterEntity['price_without_vat'], 2, '.', ''),
@@ -234,5 +234,17 @@ class Export extends BaseController
 
 
         return $data;
+    }
+
+
+    private function fixDocNo(string $docNo = ''): string
+    {
+        $fixedDocNo = '';
+        if (strlen($docNo) < 10) {
+
+            $fixedDocNo = str_pad($docNo, 10, '0', STR_PAD_LEFT);
+        }
+
+        return $fixedDocNo;
     }
 }
