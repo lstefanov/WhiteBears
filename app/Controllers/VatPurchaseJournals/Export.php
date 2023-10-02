@@ -149,7 +149,7 @@ class Export extends BaseController
                 'd_partner_type' => 11,
                 'd_partner' => 502,
                 'd_23' => 305,
-                'd_24' => $vpjFioniksFarmaEntity['business_name'],
+                'd_24' => $this->fix24($vpjFioniksFarmaEntity['business_name']),
                 'd_$18' => mb_strtolower($vpjFioniksFarmaEntity['payment_type']) === 'банка' ? '02' : '01',
             ];
 
@@ -184,7 +184,7 @@ class Export extends BaseController
                 'd_partner_type' => 11,
                 'd_partner' => 501,
                 'd_23' => 405,
-                'd_24' => $businessEntity['name'],
+                'd_24' => $this->fix24($businessEntity['name']),
                 'd_$18' => '02',
             ];
 
@@ -225,7 +225,7 @@ class Export extends BaseController
                 'd_partner_type' => 13,
                 'd_partner' => 500,
                 'd_23' => '000',
-                'd_24' => $businessEntity['name'],
+                'd_24' => $this->fix24($businessEntity['name']),
                 'd_$18' => '02',
             ];
 
@@ -245,5 +245,15 @@ class Export extends BaseController
         }
 
         return $fixedDocNo;
+    }
+
+    private function fix24(string $businessName = ''): string
+    {
+        $fixedBusinessName = $businessName;
+        if(mb_strtolower($fixedBusinessName) === 'еринфарма еоод') {
+            $fixedBusinessName = 'ЕРИНФАРМ ЕООД';
+        }
+
+        return $fixedBusinessName;
     }
 }
