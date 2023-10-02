@@ -239,9 +239,8 @@ class Export extends BaseController
 
     private function fixDocNo(string $docNo = ''): string
     {
-        $fixedDocNo = '';
+        $fixedDocNo = $docNo;
         if (strlen($docNo) < 10) {
-
             $fixedDocNo = str_pad($docNo, 10, '0', STR_PAD_LEFT);
         }
 
