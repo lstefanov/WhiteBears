@@ -43,7 +43,7 @@ class VatPurchaseJournalsExportView {
             }
 
             if (!businessId || parseInt(businessId) === 0) {
-                alert('Моля, въведете фирма!');
+                alert('Моля, изберете фирма!');
                 return;
             }
 

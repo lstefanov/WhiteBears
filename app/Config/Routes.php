@@ -35,3 +35,21 @@ $routes->get('/vat-purchase-journals/download/(:any)', 'VatPurchaseJournals\Hist
 
 $routes->get('/vat-purchase-journals/export/view/', 'VatPurchaseJournals\Export::view/', ['filter' => 'authFilter']);
 $routes->get('/vat-purchase-journals/export/export/', 'VatPurchaseJournals\Export::export/', ['filter' => 'authFilter']);
+
+$routes->get('/vat-purchase-journals/export-aster/view/', 'VatPurchaseJournals\ExportAster::view/', ['filter' => 'authFilter']);
+$routes->get('/vat-purchase-journals/export-aster/export/', 'VatPurchaseJournals\ExportAster::export/', ['filter' => 'authFilter']);
+
+
+$routes->get('/partners/providers', 'Partners::providers', ['filter' => 'authFilter']);
+$routes->get('/partners/businesses', 'Partners::businesses', ['filter' => 'authFilter']);
+$routes->get('/partners/companies', 'Partners::companies', ['filter' => 'authFilter']);
+
+
+$routes->get('/businesses/manage', 'Businesses::manage', ['filter' => 'authFilter']);
+$routes->post('/businesses/save', 'Businesses::save', ['filter' => 'authFilter']);
+$routes->post('/businesses/change-status', 'Businesses::change_status', ['filter' => 'authFilter']);
+
+
+$routes->get('/companies/manage', 'Companies::manage', ['filter' => 'authFilter']);
+$routes->post('/companies/save', 'Companies::save', ['filter' => 'authFilter']);
+$routes->post('/companies/change-status', 'Companies::change_status', ['filter' => 'authFilter']);

@@ -38,4 +38,21 @@ class ProvidersModel extends Model
     protected $afterFind = [];
     protected $beforeDelete = [];
     protected $afterDelete = [];
+
+
+    public function getBusinesses(int $providerId ): array
+    {
+        $providersBusinessesModel = new ProvidersBusinessesModel();
+        $businessesIds = $providersBusinessesModel->where('provider_id', $providerId)->findAll();
+        $businessesIds = array_column($businessesIds, 'business_id');
+
+        //get businesses details based on $businessesIds
+        $businesses = [];
+        if (!empty($businessesIds)) {
+            $businessesModel = new BusinessesModel();
+            $businesses = $businessesModel->whereIn('id', $businessesIds)->orderBy('name', 'asc')->findAll();
+        }
+
+        return $businesses;
+    }
 }

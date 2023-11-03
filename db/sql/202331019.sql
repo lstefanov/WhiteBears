@@ -1,0 +1,7 @@
+ALTER TABLE `businesses` ADD `code` VARCHAR(255) NULL DEFAULT NULL AFTER `alias_2`, ADD `in_number` VARCHAR(255) NULL DEFAULT NULL AFTER `code`;
+
+ALTER TABLE `businesses` ADD `alias_3` VARCHAR(255) NULL DEFAULT NULL AFTER `alias_2`, ADD `alias_4` VARCHAR(255) NULL DEFAULT NULL AFTER `alias_3`, ADD `alias_5` VARCHAR(255) NULL DEFAULT NULL AFTER `alias_4`;
+
+ALTER TABLE `businesses` ADD `active` TINYINT(1) NULL DEFAULT '1' AFTER `in_number`, ADD `deleted` TINYINT(1) NULL DEFAULT '0' AFTER `active`;
+
+ALTER TABLE `companies` ADD `active` TINYINT(1) NULL DEFAULT '1' AFTER `client_number`, ADD `deleted` TINYINT(1) NULL DEFAULT '0' AFTER `active`;

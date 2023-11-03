@@ -1266,3 +1266,12 @@ if (! function_exists('trait_uses_recursive')) {
         return $traits;
     }
 }
+
+
+if (! function_exists('print_r2')) {
+    function print_r2($data, $die = false)
+    {
+        echo '<pre>'; print_r2($data); echo '</pre>';
+        if ($die) die;
+    }
+}

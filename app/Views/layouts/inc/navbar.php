@@ -29,9 +29,10 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="<?= base_url('/vat-purchase-journals/add') ?>">Добвяне на фактури</a>
+                <a class="collapse-item" href="<?= base_url('/vat-purchase-journals/add') ?>">Добавяне на справка</a>
                 <a class="collapse-item" href="<?= base_url('vat-purchase-journals/history') ?>">Списък</a>
                 <a class="collapse-item" href="<?= base_url('vat-purchase-journals/export/view') ?>">Изтегляне</a>
+                <a class="collapse-item" href="<?= base_url('vat-purchase-journals/export-aster/view') ?>">Дневник на продажбите на Астер Русе</a>
             </div>
         </div>
     </li>
@@ -49,6 +50,23 @@
         <a class="nav-link" href="#">
             <i class="fas fa-fw fa-table"></i>
             <span>Разплащане по фактури</span></a>
+    </li>
+
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo2"
+           aria-expanded="true" aria-controls="collapseTwo2">
+            <i class="fas fa-fw fa-list"></i>
+            <span>Сътрудници</span>
+        </a>
+        <div id="collapseTwo2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="<?= base_url('partners/providers') ?>">Доставчици</a>
+                <a class="collapse-item" href="<?= base_url('partners/businesses') ?>">Фирми</a>
+                <a class="collapse-item" href="<?= base_url('partners/companies') ?>">Обекти</a>
+            </div>
+        </div>
     </li>
 
     <!-- Divider -->

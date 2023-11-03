@@ -13,7 +13,12 @@ class CompaniesModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'name',
+        'client_number',
+        'active',
+        'deleted',
+    ];
 
     // Dates
     protected $useTimestamps = false;
@@ -38,4 +43,35 @@ class CompaniesModel extends Model
     protected $afterFind = [];
     protected $beforeDelete = [];
     protected $afterDelete = [];
+
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function addBusinesses(int $companyId, array $businesses): bool
+    {
+        $businessesCompaniesModel = new BusinessesCompaniesModel();
+        $businessesCompaniesModel->where('company_id', $companyId)->delete();
+
+        $data = [];
+        foreach ($businesses as $business) {
+            $data[] = [
+                'business_id' => $business,
+                'company_id' => $companyId,
+            ];
+        }
+
+        $businessesCompaniesModel->insertBatch($data);
+
+        return true;
+    }
+
+    public function getBusinessesByCompanyId(int $companyId): array
+    {
+        $businessesCompaniesModel = new BusinessesCompaniesModel();
+        $businessesIds = $businessesCompaniesModel->where('company_id', $companyId)->findAll();
+        $businessesIds = array_column($businessesIds, 'business_id');
+
+        return $businessesIds;
+    }
 }

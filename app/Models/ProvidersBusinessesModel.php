@@ -13,7 +13,10 @@ class ProvidersBusinessesModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    protected $allowedFields = [];
+    protected $allowedFields = [
+        'business_id',
+        'provider_id',
+    ];
 
     // Dates
     protected $useTimestamps = false;

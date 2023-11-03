@@ -7,3 +7,13 @@
 .data-table-export tbody td:nth-child(9){
     background: #01B1F0;
 }
+
+.data-table-export-aster tbody td:nth-child(7),
+.data-table-export-aster tbody td:nth-child(8),
+.data-table-export-aster tbody td:nth-child(9){
+    background: #fff;
+}
+
+table tr.deactivated td{
+    background: #eee;
+}
