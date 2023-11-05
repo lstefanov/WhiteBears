@@ -188,7 +188,6 @@ class Add extends BaseController
 
             $parsedData[$fileKey]['uuid'] = uniqid();
 
-
             $uploadedFileDir = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
             if (!is_dir($uploadedFileDir)) {
                 mkdir($uploadedFileDir, 0777, true);
@@ -314,10 +313,10 @@ class Add extends BaseController
                     'eik' => $parsedDataValue['H'],
                     'business_name' => $parsedDataValue['I'],
                     'subject_of_the_transaction' => $parsedDataValue['L'],
-                    'total_price_inc_vat' => $parsedDataValue['M'],
-                    'price_without_vat' => $parsedDataValue['N'],
-                    'price_vat' => $parsedDataValue['O'],
-                    'price_purchase' => $parsedDataValue['P'],
+                    'total_price_inc_vat' => (float) str_replace(',', '', $parsedDataValue['M']),
+                    'price_without_vat' => (float) str_replace(',', '', $parsedDataValue['N']),
+                    'price_vat' => (float) str_replace(',', '', $parsedDataValue['O']),
+                    'price_purchase' => (float) str_replace(',', '', $parsedDataValue['P']),
                 ];
 
                 $vPJAsterEntitiesModel->insert($parsedDataEntity);
@@ -395,8 +394,8 @@ class Add extends BaseController
                     'invoice_type' => $parsedDataValue['G'],
                     'due_date' => $parsedDataValue['H'],
                     'payment_type' => $parsedDataValue['I'],
-                    'payment_summary' => $parsedDataValue['J'],
-                    'payment_payed' => $parsedDataValue['K'],
+                    'payment_summary' => (float) str_replace(',', '', $parsedDataValue['J']),
+                    'payment_payed' => (float) str_replace(',', '', $parsedDataValue['K']),
                 ];
                 $vPJFioniksFarmaEntitiesModel->insert($parsedDataEntity);
             }
@@ -462,7 +461,7 @@ class Add extends BaseController
                     'doc_type' => $parsedDataValue['B'],
                     'doc_date' => $parsedDataValue['C'],
                     'payment_type' => $parsedDataValue['D'],
-                    'payment_summary' => $parsedDataValue['E'],
+                    'payment_summary' => (float) str_replace(',', '', $parsedDataValue['E']),
                 ];
                 $vPJStingEntitiesModel->insert($parsedDataEntity);
             }

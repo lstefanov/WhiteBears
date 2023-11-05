@@ -39,6 +39,7 @@ class VatPurchaseJournalsAdd {
 
                     //Check for options that have the selected provider
                     if(typeof providers !== "undefined"){
+                        providers = providers.toString();
                         let providersArray = providers.split(',');
 
                         //If the selected provider is in the array, enable the option

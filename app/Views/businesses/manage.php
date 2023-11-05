@@ -2,6 +2,12 @@
 
 <?=$this->section("content")?>
 
+    <style>
+        .dropdown.bootstrap-select.show-tick.form-select{
+            display: block;
+            width: 100% !important;
+        }
+    </style>
     <!-- Page Heading -->
 
     <div class="card shadow mb-5">
@@ -74,7 +80,7 @@
 
                 <div class="mb-4">
                     <label for="providers" class="form-label h5">Доставчик:</label>
-                    <select class="form-select" name="providers[]" id="providers" multiple required>
+                    <select class="form-select selectpicker" name="providers[]" id="providers" multiple required>
                         <?php foreach ($providers as $provider){ ?>
                             <option value="<?= $provider['id'] ?>"
                                 <?= (is_array(old('providers')) && in_array($provider['id'], old('providers'))) ? 'selected' : '' ?>

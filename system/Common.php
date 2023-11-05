@@ -1271,7 +1271,7 @@ if (! function_exists('trait_uses_recursive')) {
 if (! function_exists('print_r2')) {
     function print_r2($data, $die = false)
     {
-        echo '<pre>'; print_r2($data); echo '</pre>';
+        echo '<pre>'; print_r($data); echo '</pre>';
         if ($die) die;
     }
 }

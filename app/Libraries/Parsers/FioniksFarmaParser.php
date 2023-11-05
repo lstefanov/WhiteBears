@@ -252,9 +252,15 @@ class FioniksFarmaParser
         foreach ($businesses as $businessKey => $business) {
             //Predefine names for validation
             $businesses[$businessKey]['names_for_validation'] = [
+                //'name' => str_replace(' ', '', mb_strtolower($business['name'])),
+                //'alias_1' => $business['alias_1'] ? str_replace(' ', '', mb_strtolower($business['alias_1'])) : false,
+                //'alias_2' => $business['alias_2'] ? str_replace(' ', '', mb_strtolower($business['alias_2'])) : false
                 'name' => str_replace(' ', '', mb_strtolower($business['name'])),
-                'alias_1' => $business['alias_1'] ? str_replace(' ', '', mb_strtolower($business['alias_1'])) : false,
-                'alias_2' => $business['alias_2'] ? str_replace(' ', '', mb_strtolower($business['alias_2'])) : false
+                'alias_1' => mb_strtolower($business['alias_1']),
+                'alias_2' => mb_strtolower($business['alias_2']),
+                'alias_3' => mb_strtolower($business['alias_3']),
+                'alias_4' =>  mb_strtolower($business['alias_4']),
+                'alias_5' =>  mb_strtolower($business['alias_5'])
             ];
 
             $companies = $businessesCompaniesModel->where('business_id', $business['id'])->findAll();

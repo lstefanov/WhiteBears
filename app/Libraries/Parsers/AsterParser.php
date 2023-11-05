@@ -158,7 +158,8 @@ class AsterParser
 
             //Validate business
             $businessName = $row['I'];
-            $businessId = $this->getBusinessIdByName($businessName);
+            $businessInNumber = $row['H'];
+            $businessId = $this->getBusinessIdByInNumber($businessInNumber);
             if (!$businessId) {
                 $this->sheetData[$rowKey]['status'] = 'error';
                 $this->sheetData[$rowKey]['status_details'][] = "Фирма $businessName не е свързана с този доставчик";
@@ -232,6 +233,18 @@ class AsterParser
                 if($businessNameForValidation === $businessName){
                     return $business['id'];
                 }
+            }
+        }
+
+        return false;
+    }
+
+
+    private function getBusinessIdByInNumber(string $inNumber)
+    {
+        foreach ($this->businesses as $business) {
+            if($business['in_number'] === $inNumber){
+                return $business['id'];
             }
         }
 
