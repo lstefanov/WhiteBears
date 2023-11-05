@@ -57,7 +57,7 @@ class ExportAster extends BaseController
 
         //Get business details
         $businessModel = new BusinessesModel();
-        $fileName = "{$date}-Дневник на продажбите на Астер Русе-vpj.xlsx";
+        $fileName = "{$date} - Дневник на продажбите на Астер Русе-vpj.xlsx";
 
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(ROOTPATH . 'public/templates/aster-vat-purchase-journals-template.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
@@ -101,6 +101,7 @@ class ExportAster extends BaseController
             ->where('export_date', $date)
             ->where('status', 'success')
             ->orderBy('invoice_date', 'asc')
+            ->orderBy('invoice', 'asc')
             ->findAll();
 
         //Get all active businesses
