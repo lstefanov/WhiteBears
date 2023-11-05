@@ -242,6 +242,7 @@ class AsterParser
 
     private function getBusinessIdByInNumber(string $inNumber)
     {
+        $inNumber = str_replace(['BG'], '', $inNumber);
         foreach ($this->businesses as $business) {
             if($business['in_number'] === $inNumber){
                 return $business['id'];
