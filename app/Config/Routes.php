@@ -53,3 +53,7 @@ $routes->post('/businesses/change-status', 'Businesses::change_status', ['filter
 $routes->get('/companies/manage', 'Companies::manage', ['filter' => 'authFilter']);
 $routes->post('/companies/save', 'Companies::save', ['filter' => 'authFilter']);
 $routes->post('/companies/change-status', 'Companies::change_status', ['filter' => 'authFilter']);
+
+
+
+$routes->get('/test/txt/parse', 'Test\txt::parse/', ['filter' => 'guestFilter']);

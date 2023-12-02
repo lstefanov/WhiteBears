@@ -256,11 +256,11 @@ class FioniksFarmaParser
                 //'alias_1' => $business['alias_1'] ? str_replace(' ', '', mb_strtolower($business['alias_1'])) : false,
                 //'alias_2' => $business['alias_2'] ? str_replace(' ', '', mb_strtolower($business['alias_2'])) : false
                 'name' => str_replace(' ', '', mb_strtolower($business['name'])),
-                'alias_1' => mb_strtolower($business['alias_1']),
-                'alias_2' => mb_strtolower($business['alias_2']),
-                'alias_3' => mb_strtolower($business['alias_3']),
-                'alias_4' =>  mb_strtolower($business['alias_4']),
-                'alias_5' =>  mb_strtolower($business['alias_5'])
+                'alias_1' => str_replace(' ', '', mb_strtolower($business['alias_1'])),
+                'alias_2' => str_replace(' ', '', mb_strtolower($business['alias_2'])),
+                'alias_3' => str_replace(' ', '', mb_strtolower($business['alias_3'])),
+                'alias_4' => str_replace(' ', '', mb_strtolower($business['alias_4'])),
+                'alias_5' => str_replace(' ', '', mb_strtolower($business['alias_5']))
             ];
 
             $companies = $businessesCompaniesModel->where('business_id', $business['id'])->findAll();
