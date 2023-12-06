@@ -46,9 +46,16 @@
                     <h6 class="m-0 font-weight-bold text-primary">Покупка по документ</h6>
                 </div>
                 <div class="card-body">
-                    <a href="#" class="btn btn-secondary btn-icon-split btn-lg" style="display: block; text-align: left;">
-                        <span class="icon text-white-50"><i class="fas fa-ellipsis-h"></i></span>
-                        <span class="text">разработва се</span>
+                    <a href="<?= base_url('/purchase-by-document/add') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-upload"></i></span>
+                        <span class="text">Добавяне на документ</span>
+                    </a>
+
+                    <br /><br />
+
+                    <a href="<?= base_url('purchase-by-document/history') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
+                        <span class="text">Списък</span>
                     </a>
                 </div>
             </div>

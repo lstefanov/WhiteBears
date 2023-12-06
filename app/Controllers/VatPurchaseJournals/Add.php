@@ -435,6 +435,9 @@ class Add extends BaseController
                 'file_type' => $data['fileType'],
                 'file_size' => $data['fileSize'],
                 'file_location' => $uploadedFileDirSubLocation . $uploadFileName,
+                'entities_total' => $data['entities_statistics']['total'],
+                'entities_success' => $data['entities_statistics']['success'],
+                'entities_error' => $data['entities_statistics']['error'],
                 'created_at' => date('Y-m-d H:i:s'),
 
             ];

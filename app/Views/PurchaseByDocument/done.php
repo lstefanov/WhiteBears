@@ -6,7 +6,7 @@
         <div class="col-12">
 
             <div class="alert alert-success" role="alert">
-                <strong><?= $parsedDataStatistics['success'] ?></strong> <?= $parsedDataStatistics['success'] === 1 ? 'фактура беше добавена' : 'фактури бяха добавени' ?> успешно!
+                <strong><?= $parsedDataStatistics['success'] ?></strong> <?= $parsedDataStatistics['success'] === 1 ? 'документ беше добавен' : 'документа бяха добавени' ?> успешно!
             </div>
 
 

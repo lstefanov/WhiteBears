@@ -17,3 +17,20 @@
 table tr.deactivated td{
     background: #eee;
 }
+
+table.purchase-by-document-sub-table{
+    width: 100%;
+    font-size: 14px;
+}
+
+table.purchase-by-document-sub-table td:first-child{
+    text-align: right;
+}
+table.purchase-by-document-sub-table td:nth-child(2){
+    text-align: left;
+}
+
+table.purchase-by-document-sub-table td{
+    width: 50%;
+    padding: 6px;
+}

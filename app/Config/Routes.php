@@ -56,4 +56,26 @@ $routes->post('/companies/change-status', 'Companies::change_status', ['filter' 
 
 
 
-$routes->get('/test/txt/parse', 'Test\txt::parse/', ['filter' => 'guestFilter']);
+
+$routes->get('/purchase-by-document/add', 'PurchaseByDocument\Add::index', ['filter' => 'authFilter']);
+$routes->post('/purchase-by-document/submit', 'PurchaseByDocument\Add::submit', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/submit-preview', 'PurchaseByDocument\Add::submit_preview', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/finish', 'PurchaseByDocument\Add::Finish', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/done', 'PurchaseByDocument\Add::done', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/fioniks-farma-add-debug', 'PurchaseByDocument\Debug\FioniksFarma::display', ['filter' => 'authFilter']);
+
+$routes->get('/purchase-by-document/history', 'PurchaseByDocument\History::index', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/delete/(:any)', 'PurchaseByDocument\History::delete/$1', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/download/(:any)', 'PurchaseByDocument\History::download/$1', ['filter' => 'authFilter']);
+$routes->get('/purchase-by-document/view/(:any)', 'PurchaseByDocument\History::view/$1', ['filter' => 'authFilter']);
+
+
+
+
+
+
+
+
+
+$routes->get('/test/txt/parse', 'Test\txt::parse/');
+$routes->get('/test/txt2/parse', 'Test\txt2::parse/');

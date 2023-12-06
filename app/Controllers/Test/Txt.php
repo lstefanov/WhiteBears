@@ -20,26 +20,114 @@ class Txt extends BaseController
 
     private array $invoiceItemsText = [];
 
+    private bool $invoiceItemsWithCodeField = false;
+
+    private array $itemDetailsMatrixWithCode = [
+        'Код' => [6, 6],
+        'Наименование' => [12, 22],
+        'М-ка' => [35, 5],
+        'Кол.' => [40, 5],
+        'Баз.цен' => [45, 8],
+        'ТН' => [53, 3],
+        'ТО' => [56, 3],
+        'Цена ТЕ' => [59, 8],
+        'Стойност' => [67, 10],
+        'Ц.с ддс' => [77, 8],
+        'Партида' => [85, 9],
+        'Cертификат' => [94, 11],
+        'Ср.г.' => [105, 6],
+        'Ц.Апт.' => [111, 9],
+        'Пред.цена' => [120, 10]
+    ];
+
+
+    private array $itemDetailsMatrixWithoutCode = [
+        'Наименование' => [7, 24],
+        'М-ка' => [32, 5],
+        'Кол.' => [38, 7],
+        'Баз.цен' => [45, 8],
+        'ТН' => [53, 3],
+        'ТО' => [56, 3],
+        'Цена ТЕ' => [59, 8],
+        'Стойност' => [67, 10],
+        'Ц.с ддс' => [77, 8],
+        'Партида' => [85, 9],
+        'Cертификат' => [94, 11],
+        'Ср.г.' => [105, 6],
+        'Ц.Апт.' => [111, 9],
+        'Пред.цена' => [120, 10]
+    ];
+
+    /**
+     * М-ка: Мярка
+     * Кол.: Количество
+     * Баз.цена: Базисна цена
+     * ТН: Търговска надценка
+     * ТО: Търговска отстъпка
+     * Цена ТЕ: Цена на търговец на едро
+     * Стойност: Стойност
+     * Ц. с ддс: Цена с ДДС
+     * Партида и Сертификат са ясни
+     * Ср. г.: Срок на годност
+     * Ц. апт.: Цена на аптека
+     * Пред. цена: Пределна цена
+     */
+
+
+    /**
+     * getInvoiceDetails()
+     * 1. Обща стойност на покупките, без ДДС, преди отстъпка;
+     * 2. Обща стойност на стоката по цени, които доставчикът е определил като пределни за продажба;
+     * 3. Обща стойност, която РЕАЛНО е за плащане за закупената стока = стойност преди отстъпка - стойността на отстъпка + ДДС.
+     */
 
     public function __construct()
     {
         //get file content from writable folder
-        $this->fileContent = file_get_contents(WRITEPATH . 'test/txt/2.txt');
+        $this->fileContent = file_get_contents(WRITEPATH . 'test/txt/1.txt');
         $this->fileContentByLines = explode("\n", $this->fileContent);
     }
 
 
     public function parse()
     {
-        //$this->getRecipientAndSupplierInfo(); //DONE
-        //$this->getInvoiceInfo(); // Done
-        //$this->getDeliveryInfo(); //Done
-        //$this->getInvoiceDetails(); //Done
+        $this->getRecipientAndSupplierInfo(); //DONE
+        $this->getInvoiceInfo(); // Done
+        $this->getDeliveryInfo(); //Done
+        $this->getInvoiceDetails(); //Done
+        $this->getTotalItemsCount();
 
+        //Search for code because some invoices have code field and some not
+        $this->checkInvoiceItemsForCodeField(); //Done
         $this->parseInvoiceItems();
         $this->getInvoiceItems();
     }
 
+
+    private function checkInvoiceItemsForCodeField()
+    {
+        $patternBegin = '------------------------------------------------------------------------------------------------';
+        $lineNumber = 0;  // Variable to track the current line number
+        $count = 0;  // Variable to track the occurrence count
+        $foundedContent = '';
+
+        foreach ($this->fileContentByLines as $lineCounter => $line) {
+            $lineNumber++;
+
+            if (strpos($line, $patternBegin) !== false) {
+                $count++;
+            }
+
+            if($count == 1){
+                $foundedContent = $this->fileContentByLines[$lineNumber-1];
+            }
+        }
+
+
+        if(mb_strpos($foundedContent, 'Код') !== false){
+            $this->invoiceItemsWithCodeField = true;
+        }
+    }
 
     private function getInvoiceItems()
     {
@@ -47,23 +135,7 @@ class Txt extends BaseController
         $currentItemNumber = 0;
         $items = [];
 
-        $itemDetailsMatrix = [
-            'Код' => [6, 6],
-            'Наименование' => [12, 22],
-            'М-ка' => [35, 5],
-            'Кол.' => [40, 5],
-            'Баз.цен' => [45, 8],
-            'ТН' => [53, 3],
-            'ТО' => [56, 3],
-            'Цена ТЕ' => [59, 8],
-            'Стойност' => [67, 10],
-            'Ц.с ддс' => [77, 8],
-            'Партида' => [85, 9],
-            'Cертификат' => [94, 11],
-            'Ср.г.' => [105, 6],
-            'Ц.Апт.' => [111, 9],
-            'Пред.цена' => [120, 10]
-        ];
+        $itemDetailsMatrix = $this->invoiceItemsWithCodeField ? $this->itemDetailsMatrixWithCode : $this->itemDetailsMatrixWithoutCode;
 
         /**
          * Get item number and matrix
@@ -153,7 +225,7 @@ class Txt extends BaseController
                     //other lines (not main and not INN)
                     foreach ($itemDetailsMatrix as $key => $matrix){
                         $itemDetailsMatrixValue = mb_substr($line, $matrix[0], $matrix[1]);
-                        $items[$itemNumber]['details'][$key] .= " " . $itemDetailsMatrixValue;
+                        $items[$itemNumber]['details'][$key] .= trim($itemDetailsMatrixValue);
                     }
                 }
             }
@@ -176,7 +248,7 @@ class Txt extends BaseController
     {
         $invoiceItemsLines = [0, 0]; //Start line and end line
 
-        $patternItemSeparator = '--------------------------------------------------------------------------------------------------------------------------';
+        $patternItemSeparator = '------------------------------------------------------------------------------------------------';
         $count = 0;  // Variable to track the occurrence count
         $lineNumber = 0;  // Variable to track the current line number
 
@@ -215,7 +287,7 @@ class Txt extends BaseController
         $invoiceDetailsLines = [0, 0]; //Start line and end line
         $invoicePaymentLines = [0, 0]; //Start line and end line
 
-        $patternBegin = '--------------------------------------------------------------------------------------------------------------------------';
+        $patternBegin = '------------------------------------------------------------------------------------------------';
         $patternEnd = 'Получил стоката : ...........';
         $count = 0;  // Variable to track the occurrence count
         $lineNumber = 0;  // Variable to track the current line number
@@ -423,7 +495,7 @@ class Txt extends BaseController
         $result = [];
         foreach ($pattern as $key => $regex) {
             if (preg_match($regex, $recipientInfo, $matches)) {
-                $result[$key] = trim($matches[1]);
+                $result[$key] = trim(preg_replace('/\s+/', ' ', $matches[1]));
             }
         }
         print_r2($result);
@@ -435,61 +507,23 @@ class Txt extends BaseController
         $result = [];
         foreach ($pattern as $key => $regex) {
             if (preg_match($regex, $supplierInfo, $matches)) {
-                $result[$key] = trim($matches[1]);
+                $result[$key] = trim(preg_replace('/\s+/', ' ', $matches[1]));
             }
         }
         print_r2($result);
     }
 
-    private function getRecipientAndSupplierInfo_bu()
+    private function getTotalItemsCount()
     {
-        $startContentToParse = false;
-        $startLineContentToSearch = 'П О Л У Ч А Т Е Л';
-        $endLineContentToSearch = '----------------------------------------------------------------------';
+        $totalItemsCount = 0;
+        $searchPattern = '/Общо\s+кол\.\s+(\d+)\s+бр\./';
 
-        $recipientContent = "";
-        $supplierContent = "";
-
-        $recipientAndSupplierInfoLines = [8, 17];
-        $recipientContentMatrix = [0, 43];
-        $supplierContentMatrix = [43, 86];
-
-
-        die();
         foreach ($this->fileContentByLines as $lineCounter => $line) {
-            if (strpos($line, $startLineContentToSearch) !== false) {
-                $startContentToParse = true;
-                continue;
+            if (preg_match($searchPattern, $line, $matches)) {
+                $totalItemsCount = $matches[1];
             }
-
-            if (strpos($line, $endLineContentToSearch) !== false) {
-                $startContentToParse = false;
-                continue;
-            }
-
-            if (!$startContentToParse) {
-                continue;
-            }
-
-
-            //Search for name
-            if (strpos($line, 'Име: ') !== false) {
-                echo $lineCounter . ' - ' . $line . '<br>';
-
-                $pattern = '/Име:\s*([^\d]+)\s*Име:\s*(.+?)(?:\s*-+\s*|$)/u';
-
-                if (preg_match($pattern, $line, $matches)) {
-                    $firstValue = trim($matches[1]);
-                    $secondValue = trim($matches[2]);
-
-                    echo "First Value: $firstValue<br />";
-                    echo "Second Value: $secondValue<br />";
-                } else {
-                    echo "No match found.\n";
-                }
-            }
-
-
         }
+
+        echo $totalItemsCount; die();
     }
 }

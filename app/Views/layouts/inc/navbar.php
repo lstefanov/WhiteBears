@@ -29,7 +29,7 @@
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="<?= base_url('/vat-purchase-journals/add') ?>">Добавяне на справка</a>
+                <a class="collapse-item" href="<?= base_url('vat-purchase-journals/add') ?>">Добавяне на справка</a>
                 <a class="collapse-item" href="<?= base_url('vat-purchase-journals/history') ?>">Списък</a>
                 <a class="collapse-item" href="<?= base_url('vat-purchase-journals/export/view') ?>">Изтегляне</a>
                 <a class="collapse-item" href="<?= base_url('vat-purchase-journals/export-aster/view') ?>">Дневник на продажбите на Астер Русе</a>
@@ -40,9 +40,17 @@
 
     <!-- Nav Item - Tables -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Покупка по документ</span></a>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseThree"
+           aria-expanded="true" aria-controls="collapseThree">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Покупка по документ</span>
+        </a>
+        <div id="collapseThree" class="collapse" aria-labelledby="collapseThree" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="<?= base_url('purchase-by-document/add') ?>">Добавяне на документ</a>
+                <a class="collapse-item" href="<?= base_url('purchase-by-document/history') ?>">Списък</a>
+            </div>
+        </div>
     </li>
 
     <!-- Nav Item - Tables -->
