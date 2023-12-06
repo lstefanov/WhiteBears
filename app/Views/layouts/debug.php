@@ -16,7 +16,7 @@
     <link href="<?= base_url('css/libraries/datatables/dataTables.bootstrap4.min.css') ?>" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker.min.css" />
     <link rel="stylesheet" href="<?= base_url('libraries/bootstrap-select/css/bootstrap-select.css'); ?>">
-    <link rel="stylesheet" href="<?= base_url('css/sb-admin-2.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('css/sb-admin-3.css'); ?>">
     <link rel="stylesheet" href="<?= base_url('css/custom.css'); ?>">
 </head>
 <body>
