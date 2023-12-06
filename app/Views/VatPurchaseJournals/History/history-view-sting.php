@@ -27,7 +27,7 @@
                                 <td><?= $item['doc_n'] ?></td>
                                 <td><?= $item['doc_type'] ?></td>
                                 <td><?= $item['doc_date'] ?></td>
-                                <td><?= $item['doc_date'] ?></td>
+                                <td><?= $item['payment_type'] ?></td>
                                 <td><?= $item['payment_summary'] ?></td>
                                 <td>
                                     <?php if ($item['status'] === 'success') { ?>
