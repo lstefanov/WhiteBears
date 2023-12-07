@@ -10861,7 +10861,7 @@ a:focus {
 }
 
 .bg-login-image {
-  min-height: 500px;
+  min-height: 400px;
 
   /* background: url("/images/fotor-ai-20230828183012_2.jpg"); */
   background: url("/images/logo-2.png");
