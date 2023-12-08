@@ -22,8 +22,8 @@
 
 </div>
 
-<script src="<?= base_url('js/jquery/jquery.min.js'); ?>"></script>
-<script src="<?= base_url('js/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
-<script src="<?= base_url('js/sb-admin-2.js'); ?>"></script>
+<script src="<?= base_url('js/libraries/jquery/jquery.min.js'); ?>"></script>
+<script src="<?= base_url('js/libraries/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+<script src="<?= base_url('/js/sb-admin-2.js'); ?>"></script>
 </body>
 </html>

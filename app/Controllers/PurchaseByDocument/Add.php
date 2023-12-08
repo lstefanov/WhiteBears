@@ -3,6 +3,7 @@
 namespace App\Controllers\PurchaseByDocument;
 
 use App\Controllers\BaseController;
+use App\Helpers\NumberFormat;
 use App\Models\BusinessesModel;
 use App\Models\PBDFioniksFarmaDeliveryModel;
 use App\Models\PBDFioniksFarmaInvoiceItemsModel;
@@ -55,6 +56,7 @@ class Add extends BaseController
         } elseif ($providerId === 3) {
             //$parsedData = $this->parseAster();
         }
+        
 
         //@todo redirect to error page
         if (empty($parsedData)) {
@@ -371,6 +373,27 @@ class Add extends BaseController
             $invoiceExists = $purchaseByDocumentDataModel->where('invoice_number', $invoiceNumber)->first();
             if ($invoiceExists) {
                 $items[$itemKey]['error'] = 'Фактура с номер: ' . $invoiceNumber . ' вече е добавена';
+                continue;
+            }
+
+            //Validate total price
+            $totalPriceFromItems = 0;
+            foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
+                $totalPriceFromItems += $invoiceItem['value'];
+            }
+            $totalPriceFromItems = NumberFormat::formatPrice($totalPriceFromItems);
+            $totalPriceFromInvoice = $item['parsed']['invoicePrice']['result']['totalPrice'];
+            if ($totalPriceFromItems != $totalPriceFromInvoice) {
+                $items[$itemKey]['error'] = "Сумата от елементите: {$totalPriceFromItems} е различна от сумата от фактурата: {$totalPriceFromInvoice}";
+                continue;
+            }
+
+            //Validate price discount
+            $sum1ToValidate = $item['parsed']['invoicePrice']['result']['totalPrice'] - $item['parsed']['invoicePrice']['result']['tradeDiscount'];
+            $sum2ToValidate = $item['parsed']['invoicePrice']['result']['taxBase9'] + $item['parsed']['invoicePrice']['result']['taxBase20'] + $item['parsed']['invoicePrice']['result']['taxBase0'];
+
+            if($sum1ToValidate != $sum2ToValidate){
+                $items[$itemKey]['error'] = "Общата стойност (без търговската отстъпка): {$sum1ToValidate} е различна от сбора на данъчните основи: {$sum2ToValidate}";
                 continue;
             }
 
