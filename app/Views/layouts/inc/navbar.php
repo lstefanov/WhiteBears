@@ -57,7 +57,8 @@
     <li class="nav-item">
         <a class="nav-link" href="#">
             <i class="fas fa-fw fa-table"></i>
-            <span>Разплащане по фактури</span></a>
+            <span>Разплащане по фактури</span>
+        </a>
     </li>
 
 
@@ -76,6 +77,22 @@
             </div>
         </div>
     </li>
+
+
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo5"
+           aria-expanded="true" aria-controls="collapseTwo5">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Справки</span>
+        </a>
+        <div id="collapseTwo5" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="<?= base_url('reference/dds-vs-items-from-invoice') ?>">Съпоставка дневник ДДС/заприходена стока по фактури</a>
+            </div>
+        </div>
+    </li>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

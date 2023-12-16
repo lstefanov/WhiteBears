@@ -76,6 +76,7 @@ $routes->get('/purchase-by-document/view/(:any)', 'PurchaseByDocument\History::v
 
 
 
-
 $routes->get('/test/txt/parse', 'Test\txt::parse/');
 $routes->get('/test/txt2/parse', 'Test\txt2::parse/');
+$routes->get('/test/avd/parse', 'Test\Avd::parse/');
+$routes->get('/test/sss/parse', 'Test\Sss::parse/');

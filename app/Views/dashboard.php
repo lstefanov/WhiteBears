@@ -109,4 +109,22 @@
 
     </div>
 
+    <div class="row">
+        <div class="col-3">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Справки</h6>
+                </div>
+                <div class="card-body">
+                    <a href="<?= base_url('reference/dds-vs-items-from-invoice') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
+                        <span class="text">Съпоставка дневник ДДС/заприходена стока по фактури</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 <?=$this->endSection()?>

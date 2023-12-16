@@ -56,7 +56,7 @@ class Add extends BaseController
         } elseif ($providerId === 3) {
             //$parsedData = $this->parseAster();
         }
-        
+
 
         //@todo redirect to error page
         if (empty($parsedData)) {
@@ -392,6 +392,9 @@ class Add extends BaseController
             $sum1ToValidate = $item['parsed']['invoicePrice']['result']['totalPrice'] - $item['parsed']['invoicePrice']['result']['tradeDiscount'];
             $sum2ToValidate = $item['parsed']['invoicePrice']['result']['taxBase9'] + $item['parsed']['invoicePrice']['result']['taxBase20'] + $item['parsed']['invoicePrice']['result']['taxBase0'];
 
+            $sum1ToValidate = NumberFormat::formatPrice($sum1ToValidate);
+            $sum2ToValidate = NumberFormat::formatPrice($sum2ToValidate);
+            
             if($sum1ToValidate != $sum2ToValidate){
                 $items[$itemKey]['error'] = "Общата стойност (без търговската отстъпка): {$sum1ToValidate} е различна от сбора на данъчните основи: {$sum2ToValidate}";
                 continue;
