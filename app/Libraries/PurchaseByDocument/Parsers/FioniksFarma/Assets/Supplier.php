@@ -42,7 +42,7 @@ class Supplier
 
     public function execute()
     {
-        $recipientAndSupplierInfoLines = [8, 16]; //Start line and end line
+        $recipientAndSupplierInfoLines = [0, 16]; //Start line and end line
         $supplierContentMatrix = [43, 43]; //Start position and length
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {

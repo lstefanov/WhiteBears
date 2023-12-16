@@ -42,7 +42,7 @@ class InvoiceInfo
 
     public function execute()
     {
-        $invoiceInfoLines = [18, 18]; //Start line and end line
+        $invoiceInfoLines = [16, 18]; //Start line and end line
         $recipientContentMatrix = [0, 120]; //Start position and length
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {

@@ -44,7 +44,7 @@ class Recipient
 
     public function execute()
     {
-        $recipientAndSupplierInfoLines = [8, 16]; //Start line and end line
+        $recipientAndSupplierInfoLines = [0, 16]; //Start line and end line
         $recipientContentMatrix = [0, 43]; //Start position and length
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {
