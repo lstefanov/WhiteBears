@@ -129,7 +129,7 @@
                         <td colspan="3" >
 
                             <?php
-                                if($data['data']['document_type'] === 1){
+                                if((int)$data['data']['document_type'] === 1){
                                     include( ROOTPATH . 'app/Views/PurchaseByDocument/History/FioniksFarma/Assets/Items.php');
                                 } else {
                                     include( ROOTPATH . 'app/Views/PurchaseByDocument/History/FioniksFarma/Assets/ItemsSubscription.php');
@@ -144,7 +144,7 @@
                                 <div class="col-6">
 
                                     <?php
-                                        if($data['data']['document_type'] === 1){
+                                        if((int)$data['data']['document_type'] === 1){
                                             include( ROOTPATH . 'app/Views/PurchaseByDocument/History/FioniksFarma/Assets/InvoicePrice.php');
                                         } else {
                                             include( ROOTPATH . 'app/Views/PurchaseByDocument/History/FioniksFarma/Assets/InvoicePriceSubscription.php');
