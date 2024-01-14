@@ -11,8 +11,14 @@ class Parser
      */
     private $fileContentByLines;
 
+    private int $invoiceType = 1; //1- Фактура, 2 - Абонамент
+
     public function execute(string $fileContent)
     {
+        //Check for Invoice Type
+        $this->checkInvoiceType($fileContent);
+
+
         $this->fileContentByLines = explode("\n", $fileContent);
 
         //Get items count
@@ -75,7 +81,12 @@ class Parser
 
 
         //get invoice items
-        $invoiceItemsParser = new Assets\Items($this->fileContentByLines);
+        if($this->invoiceType === 1){
+            $invoiceItemsParser = new Assets\Items($this->fileContentByLines);
+        } else {
+            $invoiceItemsParser = new Assets\ItemsSubscription($this->fileContentByLines);
+        }
+
         $invoiceItemsParser->execute();
         $this->result['invoiceItems']['parsed'] = $invoiceItemsParser->getParsedInfo();
         $this->result['invoiceItems']['raw'] = $invoiceItemsParser->getRawInfo();
@@ -87,5 +98,19 @@ class Parser
     public function getResult(): array
     {
         return $this->result;
+    }
+
+    public function getInvoiceType(): int
+    {
+        return $this->invoiceType;
+    }
+
+    private function checkInvoiceType(string $fileContent): void
+    {
+        $searchString = "ОБЛАГАЕМА СТОЙНОСТ";
+
+        if (strpos($fileContent, $searchString) !== false) {
+            $this->invoiceType = 2;
+        }
     }
 }

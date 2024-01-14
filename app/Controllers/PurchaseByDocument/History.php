@@ -67,7 +67,7 @@ class History extends BaseController
             ];
             $this->viewData['data'] = $data;
 
-            return view('PurchaseByDocument/History/history-view-fioniks-farma', $this->viewData);
+            return view('PurchaseByDocument/History/FioniksFarma/View', $this->viewData);
         } elseif((int)$pbdDetails['provider_id'] === 3){
 
         }

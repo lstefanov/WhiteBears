@@ -16,6 +16,7 @@ class PurchaseByDocumentDataModel extends Model
     protected $allowedFields = [
         'provider_id',
         'business_id',
+        'document_type',
         'invoice_number',
         'invoice_date',
         'amount',

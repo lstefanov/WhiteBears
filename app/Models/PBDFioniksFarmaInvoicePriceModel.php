@@ -15,6 +15,7 @@ class PBDFioniksFarmaInvoicePriceModel extends Model
     protected $protectFields = true;
     protected $allowedFields = [
         'purchase_by_document_id',
+        'taxable_value',
         'total_price',
         'total_price_from_supplier',
         'trade_discount',

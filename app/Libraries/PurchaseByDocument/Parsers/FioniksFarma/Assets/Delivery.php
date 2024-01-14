@@ -41,7 +41,7 @@ class Delivery
 
     public function execute()
     {
-        $deliveryInfoLines = [9, 15]; //Start line and end line
+        $deliveryInfoLines = [8, 15]; //Start line and end line
         $deliveryInfoMatrix = [95, 34]; //Start position and length
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {

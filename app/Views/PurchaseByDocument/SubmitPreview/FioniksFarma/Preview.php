@@ -170,110 +170,27 @@
                                 </tr>
                                 <tr>
                                     <td colspan="3" >
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-right">N</th>
-                                                    <?php if((int) $data['parsed']['nzok'] === 1){ ?>
-                                                        <th>Код</th>
-                                                    <?php } ?>
-                                                    <th>Наименование</th>
-                                                    <th>М-ка</th>
-                                                    <th class="text-right">Кол.</th>
-                                                    <th class="text-right">Баз.цен</th>
-                                                    <th class="text-right">ТН</th>
-                                                    <th class="text-right">ТО</th>
-                                                    <th class="text-right">Цена ТЕ</th>
-                                                    <th class="text-right">Стойност</th>
-                                                    <th class="text-right">Ц.с ддс</th>
-                                                    <th>Партида</th>
-                                                    <th>Cертификат</th>
-                                                    <th>Ср.г.</th>
-                                                    <th class="text-right">Ц.Апт.</th>
-                                                    <th class="text-right">Пред.цена</th>
-                                                    <th>Пред.цена тип</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php foreach ($data['parsed']['invoiceItems']['result'] as $itemKey => $item){ ?>
-                                                    <tr>
-                                                        <td class="text-right"><?= $item['itemNumber'] ?></td>
-                                                        <?php if((int) $data['parsed']['nzok'] === 1){ ?>
-                                                            <td><?= $item['code'] ?></td>
-                                                        <?php } ?>
-                                                        <td>
-                                                            <?= $item['designation'] ?>
-                                                            <?= !empty($item['INN']) ? "<br /><small>{$item['INN']}</small>" : '' ?>
-                                                        </td>
-                                                        <td><?= $item['manufacturer'] ?></td>
-                                                        <td class="text-right"><?= $item['quantity'] ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['basePrice'] : '' ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['tradeMarkup'] : '' ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['tradeDiscount'] : '' ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['wholesalerPrice'] : '' ?></td>
-                                                        <td class="text-right"><?= $item['value'] ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['priceWithVAT'] : '' ?></td>
-                                                        <td><?= $item['batch'] ?></td>
-                                                        <td><?= $item['certificate'] ?></td>
-                                                        <td><?= $item['expiryDate'] ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['pharmacyPrice'] : '' ?></td>
-                                                        <td class="text-right"><?= $item['value'] > 0 ? $item['limitPrice'] : '' ?></td>
-                                                        <td><?= $item['limitPriceType'] ?></td>
-                                                    </tr>
-                                                <?php } ?>
-                                            </tbody>
-                                        </table>
+                                        <?php
+                                            if($data['invoiceType'] === 1){
+                                                include( ROOTPATH . 'app/Views/PurchaseByDocument/SubmitPreview/FioniksFarma/Assets/Items.php');
+                                            } else {
+                                                include( ROOTPATH . 'app/Views/PurchaseByDocument/SubmitPreview/FioniksFarma/Assets/ItemsSubscription.php');
+                                            }
+                                        ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="3" class="text-center">
                                         <div class="row">
                                             <div class="col-6">
-                                                <table class="table table-bordered purchase-by-document-sub-table">
-                                                    <tr>
-                                                        <td>ОБЩА СТОЙНОСТ</td>
-                                                        <td class="font-weight-bold">
-                                                            <?= $data['parsed']['invoicePrice']['result']['totalPrice'] ?>
-                                                            <span style="float: right;"><?= $data['parsed']['invoicePrice']['result']['totalPriceFromSupplier'] ?></span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>ТЪРГОВСКА ОТСТЪПКА:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['tradeDiscount'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>ДАНЪЧНА ОСНОВА ЗА  9 % ДДС:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['taxBase9'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>НАЧИСЛЕН ДДС ЗА  9 % ДДС:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['tax9'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>ДАНЪЧНА ОСНОВА ЗА 20 % ДДС:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['taxBase20'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>НАЧИСЛЕН ДДС ЗА 20 % ДДС:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['tax20'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>ДАНЪЧНА ОСНОВА ЗА  0 % ДДС:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['taxBase0'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>СУМА ЗА ПЛАЩАНЕ:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['totalPriceWithTax'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Словом:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['totalPriceWithTaxInWords'] ?></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Забележка:</td>
-                                                        <td class="font-weight-bold"><?= $data['parsed']['invoicePrice']['result']['note'] ?></td>
-                                                    </tr>
-                                                </table>
+
+                                                <?php
+                                                    if($data['invoiceType'] === 1){
+                                                        include( ROOTPATH . 'app/Views/PurchaseByDocument/SubmitPreview/FioniksFarma/Assets/InvoicePrice.php');
+                                                    } else {
+                                                        include( ROOTPATH . 'app/Views/PurchaseByDocument/SubmitPreview/FioniksFarma/Assets/InvoicePriceSubscription.php');
+                                                    }
+                                                ?>
                                             </div>
 
                                             <div class="col-6">

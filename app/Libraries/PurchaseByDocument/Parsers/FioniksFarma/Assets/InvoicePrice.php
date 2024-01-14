@@ -79,6 +79,7 @@ class InvoicePrice
 
         // Define an associative array to store the extracted values
         $pattern = [
+            'ОБЛАГАЕМА СТОЙНОСТ' => '/ОБЛАГАЕМА СТОЙНОСТ\s*:\s*([^\n\r]+)/',
             'ОБЩА СТОЙНОСТ' => '/ОБЩА СТОЙНОСТ\s*:\s*([^\n\r]+)/',
             'ТЪРГОВСКА ОТСТЪПКА' => '/ТЪРГОВСКА ОТСТЪПКА\s*:\s*([^\n\r]+)/',
             'ДАНЪЧНА ОСНОВА ЗА  9 % ДДС' => '/ДАНЪЧНА ОСНОВА ЗА  9 % ДДС\s*:\s*([^\n\r]+)/',
@@ -102,6 +103,7 @@ class InvoicePrice
     public function fixResult()
     {
         $this->result = [
+            'taxableValue' => $this->parsedInfo['ОБЛАГАЕМА СТОЙНОСТ'] ?? '',
             'totalPrice' => $this->parsedInfo['ОБЩА СТОЙНОСТ'] ?? '',
             'tradeDiscount' => $this->parsedInfo['ТЪРГОВСКА ОТСТЪПКА'] ?? '',
             'taxBase9' => $this->parsedInfo['ДАНЪЧНА ОСНОВА ЗА  9 % ДДС'] ?? '',
@@ -129,6 +131,7 @@ class InvoicePrice
         }
 
         //Fix price to be able to fit in database
+        $this->result['taxableValue'] = NumberFormat::formatPrice($this->result['taxableValue']);
         $this->result['totalPrice'] = NumberFormat::formatPrice($this->result['totalPrice']);
         $this->result['totalPriceFromSupplier'] = NumberFormat::formatPrice($this->result['totalPriceFromSupplier']);
         $this->result['tradeDiscount'] = NumberFormat::formatPrice($this->result['tradeDiscount']);
@@ -143,6 +146,7 @@ class InvoicePrice
     private function setAlias()
     {
         $this->alias = [
+            'taxableValue' => 'ОБЛАГАЕМА СТОЙНОСТ',
             'totalPrice' => 'ОБЩА СТОЙНОСТ',
             'tradeDiscount' => 'ТЪРГОВСКА ОТСТЪПКА',
             'taxBase9' => 'ДАНЪЧНА ОСНОВА ЗА  9 % ДДС',

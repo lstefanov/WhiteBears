@@ -97,7 +97,7 @@ class Add extends BaseController
         if ($provider === 1) {
             //return view('VatPurchaseJournals/SubmitPreview/Sting', $this->viewData);
         } elseif ($provider === 2) {
-            return view('PurchaseByDocument/SubmitPreview/FioniksFarma', $this->viewData);
+            return view('PurchaseByDocument/SubmitPreview/FioniksFarma/Preview', $this->viewData);
         } elseif ($provider === 3) {
             //return view('VatPurchaseJournals/SubmitPreview/Aster', $this->viewData);
         }
@@ -106,6 +106,9 @@ class Add extends BaseController
     }
 
 
+    /**
+     * @throws \ReflectionException
+     */
     public function finish(): RedirectResponse
     {
         $provider = $this->session->get('PbParsedDataProvider');
@@ -150,6 +153,7 @@ class Add extends BaseController
             $purchaseByDocumentData = [
                 'provider_id' => 2,
                 'business_id' => $data['business']['id'],
+                'document_type' => $data['invoiceType'],
                 'invoice_number' => $data['parsed']['invoiceInfo']['result']['number'],
                 'invoice_date' => $data['parsed']['invoiceInfo']['result']['date'],
                 'amount' => $data['parsed']['invoicePrice']['result']['totalPrice'],
@@ -210,6 +214,7 @@ class Add extends BaseController
             //Save invoice price
             $invoicePriceData = [
                 'purchase_by_document_id' => $purchaseByDocumentId,
+                'taxable_value' => $data['parsed']['invoicePrice']['result']['taxableValue'],
                 'total_price' => $data['parsed']['invoicePrice']['result']['totalPrice'],
                 'total_price_from_supplier' => $data['parsed']['invoicePrice']['result']['totalPriceFromSupplier'],
                 'trade_discount' => $data['parsed']['invoicePrice']['result']['tradeDiscount'],
@@ -248,18 +253,18 @@ class Add extends BaseController
                     'manufacturer' => $invoiceItem['manufacturer'],
                     'quantity' => $invoiceItem['quantity'],
                     'base_price' => $invoiceItem['basePrice'],
-                    'trade_markup' => $invoiceItem['tradeMarkup'],
+                    'trade_markup' => $invoiceItem['tradeMarkup'] ?? 0,
                     'trade_discount' => $invoiceItem['tradeDiscount'],
-                    'wholesaler_price' => $invoiceItem['wholesalerPrice'],
+                    'wholesaler_price' => $invoiceItem['wholesalerPrice'] ?? 0,
                     'value' => $invoiceItem['value'],
                     'price_with_vat' => $invoiceItem['priceWithVAT'],
-                    'batch' => $invoiceItem['batch'],
-                    'certificate' => $invoiceItem['certificate'],
-                    'expiry_date' => $invoiceItem['expiryDate'],
-                    'pharmacy_price' => $invoiceItem['pharmacyPrice'],
-                    'limit_price' => $invoiceItem['limitPrice'],
-                    'limit_price_type' => $invoiceItem['limitPriceType'],
-                    'inn' => $invoiceItem['INN']
+                    'batch' => $invoiceItem['batch'] ?? '',
+                    'certificate' => $invoiceItem['certificate'] ?? '',
+                    'expiry_date' => $invoiceItem['expiryDate'] ?? '',
+                    'pharmacy_price' => $invoiceItem['pharmacyPrice'] ?? 0,
+                    'limit_price' => $invoiceItem['limitPrice'] ?? 0,
+                    'limit_price_type' => $invoiceItem['limitPriceType'] ?? '',
+                    'inn' => $invoiceItem['INN'] ?? '',
                 ];
                 $pbdFioniksFarmaInvoiceItemsModel->insert($invoiceItemData);
             }
@@ -285,7 +290,8 @@ class Add extends BaseController
                 'type' => 'text',
                 'name' => "Текст " . ($textElementKey + 1),
                 'originalContent' => $text,
-                'parsed' => $fioniksFarmaParser->getResult()
+                'parsed' => $fioniksFarmaParser->getResult(),
+                'invoiceType' => $fioniksFarmaParser->getInvoiceType()
             ];
         }
 
@@ -307,7 +313,8 @@ class Add extends BaseController
                     'type' => 'file',
                     'name' => $file->getName(),
                     'originalContent' => file_get_contents($file->getTempName()),
-                    'parsed' => $fioniksFarmaParser->getResult()
+                    'parsed' => $fioniksFarmaParser->getResult(),
+                    'invoiceType' => $fioniksFarmaParser->getInvoiceType()
                 ];
             }
         }
@@ -377,27 +384,43 @@ class Add extends BaseController
             }
 
             //Validate total price
-            $totalPriceFromItems = 0;
-            foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
-                $totalPriceFromItems += $invoiceItem['value'];
+            if($item['invoiceType'] === 1){
+                $totalPriceFromItems = 0;
+                foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
+                    $totalPriceFromItems += $invoiceItem['value'];
+                }
+                $totalPriceFromItems = NumberFormat::formatPrice($totalPriceFromItems);
+                $totalPriceFromInvoice = $item['parsed']['invoicePrice']['result']['totalPrice'];
+                if ($totalPriceFromItems != $totalPriceFromInvoice) {
+                    $items[$itemKey]['error'] = "Сумата от елементите: {$totalPriceFromItems} е различна от сумата от фактурата: {$totalPriceFromInvoice}";
+                    continue;
+                }
+            } elseif($item['invoiceType'] === 2){
+                $totalPriceFromItems = 0;
+                foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
+                    $totalPriceFromItems += $invoiceItem['priceWithVAT'];
+                }
+                $totalPriceFromItems = NumberFormat::formatPrice($totalPriceFromItems);
+                $totalPriceFromInvoice = $item['parsed']['invoicePrice']['result']['totalPriceWithTax'];
+                if ($totalPriceFromItems != $totalPriceFromInvoice) {
+                    $items[$itemKey]['error'] = "Сумата от елементите: {$totalPriceFromItems} е различна от сумата от фактурата: {$totalPriceFromInvoice}";
+                    continue;
+                }
             }
-            $totalPriceFromItems = NumberFormat::formatPrice($totalPriceFromItems);
-            $totalPriceFromInvoice = $item['parsed']['invoicePrice']['result']['totalPrice'];
-            if ($totalPriceFromItems != $totalPriceFromInvoice) {
-                $items[$itemKey]['error'] = "Сумата от елементите: {$totalPriceFromItems} е различна от сумата от фактурата: {$totalPriceFromInvoice}";
-                continue;
-            }
+
 
             //Validate price discount
-            $sum1ToValidate = $item['parsed']['invoicePrice']['result']['totalPrice'] - $item['parsed']['invoicePrice']['result']['tradeDiscount'];
-            $sum2ToValidate = $item['parsed']['invoicePrice']['result']['taxBase9'] + $item['parsed']['invoicePrice']['result']['taxBase20'] + $item['parsed']['invoicePrice']['result']['taxBase0'];
+            if($item['invoiceType'] === 1){
+                $sum1ToValidate = $item['parsed']['invoicePrice']['result']['totalPrice'] - $item['parsed']['invoicePrice']['result']['tradeDiscount'];
+                $sum2ToValidate = $item['parsed']['invoicePrice']['result']['taxBase9'] + $item['parsed']['invoicePrice']['result']['taxBase20'] + $item['parsed']['invoicePrice']['result']['taxBase0'];
 
-            $sum1ToValidate = NumberFormat::formatPrice($sum1ToValidate);
-            $sum2ToValidate = NumberFormat::formatPrice($sum2ToValidate);
-            
-            if($sum1ToValidate != $sum2ToValidate){
-                $items[$itemKey]['error'] = "Общата стойност (без търговската отстъпка): {$sum1ToValidate} е различна от сбора на данъчните основи: {$sum2ToValidate}";
-                continue;
+                $sum1ToValidate = NumberFormat::formatPrice($sum1ToValidate);
+                $sum2ToValidate = NumberFormat::formatPrice($sum2ToValidate);
+
+                if($sum1ToValidate != $sum2ToValidate){
+                    $items[$itemKey]['error'] = "Общата стойност (без търговската отстъпка): {$sum1ToValidate} е различна от сбора на данъчните основи: {$sum2ToValidate}";
+                    continue;
+                }
             }
 
             $items[$itemKey]['success'] = true;

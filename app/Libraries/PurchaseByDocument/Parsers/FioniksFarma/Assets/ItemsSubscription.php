@@ -5,7 +5,7 @@ namespace App\Libraries\PurchaseByDocument\Parsers\FioniksFarma\Assets;
 use App\Helpers\NumberFormat;
 use Faker\Core\Number;
 
-class Items
+class ItemsSubscription
 {
     private array $fileContentByLines;
 
@@ -15,42 +15,18 @@ class Items
 
     private array $parsedInfo = [];
 
-    private array $itemDetailsMatrixWithCode = [
-        'Код' => [6, 6],
-        'Наименование' => [12, 22],
-        'М-ка' => [35, 5],
-        'Кол.' => [40, 5],
-        'Баз.цен' => [45, 8],
-        'ТН' => [53, 3],
-        'ТО' => [56, 3],
-        'Цена ТЕ' => [59, 8],
-        'Стойност' => [67, 10],
-        'Ц.с ддс' => [77, 8],
-        'Партида' => [85, 9],
-        'Cертификат' => [94, 11],
-        'Ср.г.' => [105, 6],
-        'Ц.Апт.' => [111, 9],
-        'Пред.цена' => [120, 10]
+    private array $itemDetailsMatrix = [
+        'Наименование' => [6, 39],
+        'М-ка' => [46, 5],
+        'Кол.' => [52, 5],
+        'Ед.цен' => [58, 9],
+        'ТО' => [68, 3],
+        'Стойност' => [72, 10],
+        'Ц.с ддс' => [83, 10],
     ];
 
-
-    private array $itemDetailsMatrixWithoutCode = [
-        'Наименование' => [7, 24],
-        'М-ка' => [32, 5],
-        'Кол.' => [38, 7],
-        'Баз.цен' => [45, 8],
-        'ТН' => [53, 3],
-        'ТО' => [56, 3],
-        'Цена ТЕ' => [59, 8],
-        'Стойност' => [67, 10],
-        'Ц.с ддс' => [77, 8],
-        'Партида' => [85, 9],
-        'Cертификат' => [94, 11],
-        'Ср.г.' => [105, 6],
-        'Ц.Апт.' => [111, 9],
-        'Пред.цена' => [120, 10]
-    ];
     private array $result;
+
     private array $alias;
 
     public function __construct(array $fileContentByLines)
@@ -80,49 +56,23 @@ class Items
         return $this->alias;
     }
 
-    public function getIsNZOK(): int
-    {
-        return $this->invoiceItemsWithCodeField ? 1 : 0;
-    }
 
     public function execute()
     {
-        $this->checkInvoiceItemsForCodeField(); //Done
         $this->parseInvoiceItems();
         $this->getInvoiceItems();
     }
 
-    private function checkInvoiceItemsForCodeField()
+    public function getIsNZOK(): int
     {
-        $patternBegin = '------------------------------------------------------------------------------------------------';
-        $lineNumber = 0;  // Variable to track the current line number
-        $count = 0;  // Variable to track the occurrence count
-        $foundedContent = '';
-
-        foreach ($this->fileContentByLines as $lineCounter => $line) {
-            $lineNumber++;
-
-            if (strpos($line, $patternBegin) !== false) {
-                $count++;
-            }
-
-            if ($count == 1) {
-                $foundedContent = $this->fileContentByLines[$lineNumber - 1];
-            }
-        }
-
-
-        if (mb_strpos($foundedContent, 'Код') !== false) {
-            $this->invoiceItemsWithCodeField = true;
-        }
+        return 0;
     }
-
 
     private function parseInvoiceItems()
     {
         $invoiceItemsLines = [0, 0]; //Start line and end line
 
-        $patternItemSeparator = '------------------------------------------------------------------------------------------------';
+        $patternItemSeparator = '-------------------------------------------------------------------------------------------';
         $count = 0;  // Variable to track the occurrence count
         $lineNumber = 0;  // Variable to track the current line number
 
@@ -154,16 +104,17 @@ class Items
 
     private function getInvoiceItems()
     {
-        $itemNumberMatrix = [0, 7];
+        $itemNumberMatrix = [0, 6];
         $currentItemNumber = 0;
 
-        $itemDetailsMatrix = $this->invoiceItemsWithCodeField ? $this->itemDetailsMatrixWithCode : $this->itemDetailsMatrixWithoutCode;
+        $itemDetailsMatrix = $this->itemDetailsMatrix;
 
         /**
          * Get item number and matrix
          */
         foreach ($this->rawInfo as $lineNumber => $line) {
             $invoiceItemNumberMatrixForLine = mb_substr($line, $itemNumberMatrix[0], $itemNumberMatrix[1]);
+            echo $invoiceItemNumberMatrixForLine;
 
             /*
              * Validate for item number
@@ -174,10 +125,6 @@ class Items
                 continue;
             }
 
-            //INN: string ???
-            if (mb_strpos(mb_strtolower($invoiceItemNumberMatrixForLine), 'inn:') !== false) {
-                continue;
-            }
 
             //is numeric
             if (!is_numeric($invoiceItemNumberMatrixForLine)) {
@@ -204,7 +151,6 @@ class Items
 
         //Set last element matrix (line end
         $this->parsedInfo[$currentItemNumber]['matrix'][1] = count($this->rawInfo) - 1;
-
 
         /**
          * Get item content
@@ -234,10 +180,6 @@ class Items
             }
 
             foreach ($item['content'] as $lineNumber => $line) {
-                if (mb_strpos(mb_strtolower($line), 'inn:') !== false) {
-                    $this->parsedInfo[$itemNumber]['details']['INN'] = $line;
-                    continue;
-                }
 
                 //check if this is the main line
                 $invoiceItemNumberMatrixForLine = mb_substr($line, $itemNumberMatrix[0], $itemNumberMatrix[1]);
@@ -255,7 +197,6 @@ class Items
                 }
             }
         }
-
 
         //Clear item content from whitespaces
         foreach ($this->parsedInfo as $itemNumber => $item) {
@@ -290,43 +231,20 @@ class Items
 
             $itemDetails = [
                 'itemNumber' => $parsedKey,
-                'code' => $parsedItem['details']['Код'] ?? '',
                 'designation' => $parsedItem['details']['Наименование'] ?? '',
                 'manufacturer' => $parsedItem['details']['М-ка'] ?? '',
                 'quantity' => $parsedItem['details']['Кол.'] ?? '',
-                'basePrice' => $parsedItem['details']['Баз.цен'] ?? '',
-                'tradeMarkup' => $parsedItem['details']['ТН'] ?? '',
+                'basePrice' => $parsedItem['details']['Ед.цен'] ?? '',
                 'tradeDiscount' => $parsedItem['details']['ТО'] ?? '',
-                'wholesalerPrice' => $parsedItem['details']['Цена ТЕ'] ?? '',
                 'value' => $parsedItem['details']['Стойност'] ?? '',
                 'priceWithVAT' => $parsedItem['details']['Ц.с ддс'] ?? '',
-                'batch' => $parsedItem['details']['Партида'] ?? '',
-                'certificate' => $parsedItem['details']['Cертификат'] ?? '',
-                'expiryDate' => $parsedItem['details']['Ср.г.'] ?? '',
-                'pharmacyPrice' => $parsedItem['details']['Ц.Апт.'] ?? '',
-                'limitPrice' => $parsedItem['details']['Пред.цена'] ?? '',
-                'limitPriceType' => '',
-                'INN' => $parsedItem['details']['INN'] ?? '',
             ];
-
-            //Fix Пределна цена
-            if ($itemDetails['limitPrice'] != '') {
-                $limitPrice = explode(' ', $itemDetails['limitPrice']);
-                $itemDetails['limitPrice'] = $limitPrice[0];
-                $itemDetails['limitPriceType'] = $limitPrice[1] ?? '';
-            }
 
 
             //Fix price to be able to fit in database
             $itemDetails['basePrice'] = NumberFormat::formatPrice($itemDetails['basePrice']);
-            $itemDetails['tradeMarkup'] = NumberFormat::formatPrice($itemDetails['tradeMarkup']);
-            $itemDetails['tradeDiscount'] = NumberFormat::formatPrice($itemDetails['tradeDiscount']);
-            $itemDetails['wholesalerPrice'] = NumberFormat::formatPrice($itemDetails['wholesalerPrice']);
             $itemDetails['value'] = NumberFormat::formatPrice($itemDetails['value']);
             $itemDetails['priceWithVAT'] = NumberFormat::formatPrice($itemDetails['priceWithVAT']);
-            $itemDetails['pharmacyPrice'] = NumberFormat::formatPrice($itemDetails['pharmacyPrice']);
-            $itemDetails['limitPrice'] = NumberFormat::formatPrice($itemDetails['limitPrice']);
-
 
             $this->result[] = $itemDetails;
         }
@@ -337,23 +255,13 @@ class Items
     {
         $this->alias = [
             'itemNumber' => 'Номер на артикул',
-            'code' => 'Код',
             'designation' => 'Наименование',
             'manufacturer' => 'М-ка',
             'quantity' => 'Кол.',
-            'basePrice' => 'Баз.цен',
-            'tradeMarkup' => 'ТН',
+            'basePrice' => 'Ед.цена',
             'tradeDiscount' => 'ТО',
-            'wholesalerPrice' => 'Цена ТЕ',
             'value' => 'Стойност',
             'priceWithVAT' => 'Ц.с ддс',
-            'batch' => 'Партида',
-            'certificate' => 'Cертификат',
-            'expiryDate' => 'Ср.г.',
-            'pharmacyPrice' => 'Ц.Апт.',
-            'limitPrice' => 'Пред.цена',
-            'limitPriceType' => 'Пред.цена тип',
-            'INN' => 'INN',
         ];
     }
 }
