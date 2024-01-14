@@ -42,8 +42,20 @@ class Supplier
 
     public function execute()
     {
-        $recipientAndSupplierInfoLines = [0, 16]; //Start line and end line
+        $recipientAndSupplierInfoLines = [0, 16]; //Start line and end line (default)
         $supplierContentMatrix = [43, 43]; //Start position and length
+
+
+        //Try to find where info for recipient starts
+        foreach ($this->fileContentByLines as $lineCounter => $line) {
+            if (mb_strpos($line, 'Д О С Т А В Ч И К')) {
+                $recipientAndSupplierInfoLines[0] = $lineCounter;
+            }
+            if (preg_match('/NO\. \d+ \/ Дата на издаване \d{2}\.\d{2}\.\d{4}/', $line)) {
+                $recipientAndSupplierInfoLines[1] = $lineCounter;
+            }
+        }
+
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {
             if ($lineCounter >= $recipientAndSupplierInfoLines[0] && $lineCounter <= $recipientAndSupplierInfoLines[1]) {

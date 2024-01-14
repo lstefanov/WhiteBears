@@ -42,14 +42,24 @@ class InvoiceInfo
 
     public function execute()
     {
-        $invoiceInfoLines = [16, 18]; //Start line and end line
+        $invoiceInfoLines = [16, 18]; //Start line and end line (default)
         $recipientContentMatrix = [0, 120]; //Start position and length
+
+
+        $pattern = '/NO\. \d+ \/ Дата на издаване \d{2}\.\d{2}\.\d{4}/';
+        foreach ( $this->fileContentByLines as $lineNumber => $line) {
+            if (preg_match($pattern, $line)) {
+                $invoiceInfoLines[0] = $lineNumber - 1;
+                $invoiceInfoLines[1] = $lineNumber;
+            }
+        }
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {
             if ($lineCounter >= $invoiceInfoLines[0] && $lineCounter <= $invoiceInfoLines[1]) {
                 $this->rawInfo .= mb_substr($line, $recipientContentMatrix[0], $recipientContentMatrix[1]) . "\n";
             }
         }
+
 
         // Define an associative array to store the extracted values
         $pattern = [

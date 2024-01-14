@@ -41,14 +41,25 @@ class Delivery
 
     public function execute()
     {
-        $deliveryInfoLines = [8, 15]; //Start line and end line
+        $deliveryInfoLines = [9, 15]; //Start line and end line
         $deliveryInfoMatrix = [95, 34]; //Start position and length
+
+        //Try to find where info for recipient starts
+        foreach ($this->fileContentByLines as $lineCounter => $line) {
+            if (mb_strpos($line, 'П О Л У Ч А Т Е Л')) {
+                $deliveryInfoLines[0] = $lineCounter;
+            }
+            if (preg_match('/NO\. \d+ \/ Дата на издаване \d{2}\.\d{2}\.\d{4}/', $line)) {
+                $deliveryInfoLines[1] = $lineCounter;
+            }
+        }
 
         foreach ($this->fileContentByLines as $lineCounter => $line) {
             if ($lineCounter >= $deliveryInfoLines[0] && $lineCounter <= $deliveryInfoLines[1]) {
                 $this->rawInfo .= mb_substr($line, $deliveryInfoMatrix[0], $deliveryInfoMatrix[1]) . "\n";
             }
         }
+
 
         $pattern = [
             'Ср.на доставка' => '/Ср\.на доставка:\s*([^\n\r]+)/',
@@ -61,6 +72,13 @@ class Delivery
         foreach ($pattern as $key => $regex) {
             if (preg_match($regex, $this->rawInfo, $matches)) {
                 $this->parsedInfo[$key] = trim(preg_replace('/\s+/', ' ', implode(' ', array_slice($matches, 1))));
+            }
+        }
+
+        //Try to find address which not have Ул. in front of it
+        if(empty($this->parsedInfo['Адрес'])){
+            if (preg_match('/Място: .*\n(.*)\n(.*)/', $this->rawInfo, $matches)) {
+                $this->parsedInfo['Адрес'] = trim($matches[1]) . " " . trim($matches[2]);
             }
         }
     }
