@@ -16,7 +16,7 @@
                             <select class="form-select" name="providers" id="providers" required>
                                 <option selected value="">- изберете доставчик -</option>
                                 <?php foreach ($providers as $provider){ ?>
-                                    <option value="<?= $provider['id'] ?>" <?= (int)$provider['id'] !== 2 ? 'disabled' : '' ?>><?= $provider['name'] ?></option>
+                                    <option value="<?= $provider['id'] ?>" <?= (int)$provider['id'] == 3 ? 'disabled' : '' ?>><?= $provider['name'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -28,7 +28,7 @@
 
                         <div class="mb-2 mt-1">
                             <label for="businesses" class="form-label">Фаилове:</label>
-                            <input class="form-control" type="file" id="files" name="files[]" multiple accept=".txt" />
+                            <input class="form-control" type="file" id="files" name="files[]" multiple accept=".txt,.html" />
                         </div>
 
                         <hr />

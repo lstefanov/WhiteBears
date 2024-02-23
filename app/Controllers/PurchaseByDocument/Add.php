@@ -11,6 +11,12 @@ use App\Models\PBDFioniksFarmaInvoicePaymentModel;
 use App\Models\PBDFioniksFarmaInvoicePriceModel;
 use App\Models\PBDFioniksFarmaRecipientModel;
 use App\Models\PBDFioniksFarmaSupplierModel;
+use App\Models\PBDStingDeliveryModel;
+use App\Models\PBDStingInvoiceItemsModel;
+use App\Models\PBDStingInvoicePaymentModel;
+use App\Models\PBDStingInvoicePriceModel;
+use App\Models\PBDStingRecipientModel;
+use App\Models\PBDStingSupplierModel;
 use App\Models\ProvidersBusinessesModel;
 use App\Models\ProvidersModel;
 use App\Models\PurchaseByDocumentDataModel;
@@ -49,7 +55,8 @@ class Add extends BaseController
 
 
         if ($providerId === 1) {
-            //$parsedData = $this->parseSting();
+            $parsedData = $this->parseSting();
+            $this->validateSting($parsedData);
         } elseif ($providerId === 2) {
             $parsedData = $this->parseFioniksFarma();
             $this->validateFioniksFarma($parsedData);
@@ -78,6 +85,7 @@ class Add extends BaseController
             }
         }
 
+        //echo 'DEBUGGGG!!!'; print_r2($parsedDataStatistics); print_r2($parsedData,1);
 
         $this->session->set('PbParsedDataProvider', $providerId);
         $this->session->set('PbParsedData', $parsedData);
@@ -95,7 +103,7 @@ class Add extends BaseController
         $provider = $this->session->get('PbParsedDataProvider');
 
         if ($provider === 1) {
-            //return view('VatPurchaseJournals/SubmitPreview/Sting', $this->viewData);
+            return view('PurchaseByDocument/SubmitPreview/Sting/Preview', $this->viewData);
         } elseif ($provider === 2) {
             return view('PurchaseByDocument/SubmitPreview/FioniksFarma/Preview', $this->viewData);
         } elseif ($provider === 3) {
@@ -114,7 +122,7 @@ class Add extends BaseController
         $provider = $this->session->get('PbParsedDataProvider');
 
         if ($provider === 1) {
-            //$this->finishSting();
+            $this->finishSting();
         } elseif ($provider === 2) {
             $this->finishFioniksFarma();
         } elseif ($provider === 3) {
@@ -271,6 +279,276 @@ class Add extends BaseController
         }
     }
 
+
+    /**
+     * @throws \ReflectionException
+     */
+    private function finishSting()
+    {
+        $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
+        $pbdStingRecipientModel = new PBDStingRecipientModel();
+        $pbdStingSupplierModel = new PBDStingSupplierModel();
+        $pbdStingDeliveryModel = new PBDStingDeliveryModel();
+        $pbdStingInvoicePriceyModel = new PBDStingInvoicePriceModel();
+        $pbdStingInvoicePaymentModel = new PBDStingInvoicePaymentModel();
+        $pbdStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
+
+        $parsedData = $this->session->get('PbParsedData');
+
+        foreach ($parsedData as $data) {
+
+            //Save base data for added document for "Покупка по документ"
+            $purchaseByDocumentData = [
+                'provider_id' => 1,
+                'business_id' => $data['business']['id'],
+                'document_type' => $data['invoiceType'],
+                'invoice_number' => $data['parsed']['invoiceInfo']['result']['number'],
+                'invoice_date' => $data['parsed']['invoiceInfo']['result']['date'],
+                'amount' => $data['parsed']['invoicePrice']['result']['totalPrice'],
+                'payment_amount' => $data['parsed']['invoicePrice']['result']['totalPriceWithTax'],
+                'items' => count($data['parsed']['invoiceItems']['result']),
+                'entities' => $data['parsed']['itemsCount'],
+                'nzok' => $data['parsed']['nzok'] ?? 0,
+                'source_type' => $data['type'],
+                'source_name' => $data['name'],
+                'source_content' => $data['originalContent'],
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            $purchaseByDocumentDataModel->insert($purchaseByDocumentData);
+            $purchaseByDocumentId = $purchaseByDocumentDataModel->getInsertID();
+
+
+            //Save recipient data
+            $recipientData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'name' => $data['parsed']['recipient']['result']['name'],
+                'address' => $data['parsed']['recipient']['result']['address'],
+                'address_reg' => $data['parsed']['recipient']['result']['address_reg'],
+                'in_number' => $data['parsed']['recipient']['result']['idNumber'],
+                'vat_number' => $data['parsed']['recipient']['result']['vatNumber'],
+                'license' => $data['parsed']['recipient']['result']['license'],
+                'opiates_license' => $data['parsed']['recipient']['result']['opiatesLicense'],
+                'mol' => $data['parsed']['recipient']['result']['mol'],
+                'phone' => $data['parsed']['recipient']['result']['phone'],
+                'client_id' => $data['parsed']['recipient']['result']['client_id'],
+            ];
+            $pbdStingRecipientModel->insert($recipientData);
+
+
+            //Save supplier data
+            $supplierData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'name' => $data['parsed']['supplier']['result']['name'],
+                'address' => $data['parsed']['supplier']['result']['address'],
+                'in_number' => $data['parsed']['supplier']['result']['idNumber'],
+                'vat_number' => $data['parsed']['supplier']['result']['vatNumber'],
+                'license' => $data['parsed']['supplier']['result']['license'],
+                'opiates_license' => $data['parsed']['supplier']['result']['opiatesLicense'],
+                'phone' => $data['parsed']['supplier']['result']['phone'],
+                'controlling_person' => $data['parsed']['supplier']['result']['controlling_person'],
+            ];
+            $pbdStingSupplierModel->insert($supplierData);
+
+
+            //Save delivery data
+            $deliveryData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'pharmacist_in_charge' => $data['parsed']['delivery']['result']['pharmacistInCharge'],
+                'place' => $data['parsed']['delivery']['result']['place'],
+                'address' => $data['parsed']['delivery']['result']['address'],
+                'route' => $data['parsed']['delivery']['result']['route'],
+                'date' => $data['parsed']['delivery']['result']['date'],
+            ];
+            $pbdStingDeliveryModel->insert($deliveryData);
+
+            //Save invoice price
+            $invoicePriceData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'total_price' => $data['parsed']['invoicePrice']['result']['totalPrice'],
+                'total_price_from_supplier' => $data['parsed']['invoicePrice']['result']['totalPriceFromSupplier'],
+                'trade_discount_percent' => $data['parsed']['invoicePrice']['result']['tradeDiscountPercent'],
+                'value_of_the_deal' => $data['parsed']['invoicePrice']['result']['valueOfTheDeal'],
+                'tax_20' => $data['parsed']['invoicePrice']['result']['tax20'],
+                'total_price_with_tax' => $data['parsed']['invoicePrice']['result']['totalPriceWithTax'],
+                'total_price_with_tax_in_words' => $data['parsed']['invoicePrice']['result']['totalPriceWithTaxInWords'],
+                'tax_base' => $data['parsed']['invoicePrice']['result']['taxBase'],
+                'trade_discount' => $data['parsed']['invoicePrice']['result']['tradeDiscount'],
+                'doc_number' => $data['parsed']['invoicePrice']['result']['docNumber'],
+                'note' => $data['parsed']['invoicePrice']['result']['note']
+            ];
+            $pbdStingInvoicePriceyModel->insert($invoicePriceData);
+
+
+            //Save invoice payment
+            $invoicePaymentData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'payment_info' => $data['parsed']['invoicePayment']['result']['paymentInfo'],
+                'tax_event_date' => $data['parsed']['invoicePayment']['result']['taxEventDate'],
+                'payer_bic' => $data['parsed']['invoicePayment']['result']['payerBIC'],
+                'payer_iban' => $data['parsed']['invoicePayment']['result']['payerIBAN'],
+                'payer_bank' => $data['parsed']['invoicePayment']['result']['payerBank']
+            ];
+            $pbdStingInvoicePaymentModel->insert($invoicePaymentData);
+
+
+            //Save invoice items
+            foreach ($data['parsed']['invoiceItems']['result'] as $invoiceItem) {
+                $invoiceItemData = [
+                    'purchase_by_document_id' => $purchaseByDocumentId,
+                    'number' => $invoiceItem['itemNumber'],
+                    'designation' => $invoiceItem['designation'],
+                    'manufacturer' => $invoiceItem['manufacturer'],
+                    'batch' => $invoiceItem['batch'] ?? '',
+                    'quantity' => $invoiceItem['quantity'],
+                    'expiry_date' => $invoiceItem['expiryDate'] ?? '',
+                    'certificate' => $invoiceItem['certificate'] ?? '',
+                    'base_price' => $invoiceItem['basePrice'],
+                    'trade_markup' => $invoiceItem['tradeMarkup'] ?? 0,
+                    'trade_discount' => $invoiceItem['tradeDiscount'],
+                    'wholesaler_price' => $invoiceItem['wholesalerPrice'] ?? 0,
+                    'value' => $invoiceItem['value'],
+                    'price_with_vat' => $invoiceItem['priceWithVAT'],
+                    'recommended_price' => $invoiceItem['recommendedPrice'] ?? 0,
+                    'limit_price' => $invoiceItem['limitPrice'] ?? '',
+                    'percent_a' => $invoiceItem['percent_a'] ?? '',
+                    'nzok' => $invoiceItem['nzok'] ?? '',
+                ];
+                $pbdStingInvoiceItemsModel->insert($invoiceItemData);
+            }
+        }
+    }
+
+
+    private function parseSting(): array
+    {
+        // Adjust maximum file size to 100MB
+        ini_set('upload_max_filesize', '100M');
+        // Adjust maximum size of POST data to 101MB
+        ini_set('post_max_size', '101M');
+        // Increase the maximum number of files allowed to be uploaded simultaneously
+        ini_set('max_file_uploads', '1000');
+
+        $items = [];
+        $files = $this->request->getFiles();
+        $texts = $this->request->getPost('texts') ?? [];
+
+
+        //Parse attached texts
+        foreach ($texts as $textElementKey => $text) {
+
+            //Parse content
+            $stingParser = new \App\Libraries\PurchaseByDocument\Parsers\Sting\Parser();
+            $stingParser->execute($text);
+
+            //Prepare data
+            $items[] = [
+                'type' => 'text',
+                'name' => "Текст " . ($textElementKey + 1),
+                'originalContent' => $text,
+                'parsed' => $stingParser->getResult(),
+                'invoiceType' => $stingParser->getInvoiceType()
+            ];
+        }
+
+
+        //Parse attached files
+        if (!empty($files['files'])) {
+            foreach ($files['files'] as $file) {
+
+                if (empty($file->getName())) {
+                    continue;
+                }
+
+                //Parse content
+                $stingParser = new \App\Libraries\PurchaseByDocument\Parsers\Sting\Parser();
+                $stingParser->execute(file_get_contents($file->getTempName()));
+
+                $fileContent = file_get_contents($file->getTempName());
+                $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'Windows-1251');
+
+                //Prepare data
+                $items[] = [
+                    'type' => 'file',
+                    'name' => $file->getName(),
+                    'originalContent' => $fileContent,
+                    'parsed' => $stingParser->getResult(),
+                    'invoiceType' => $stingParser->getInvoiceType()
+                ];
+            }
+        }
+
+        return $items;
+    }
+
+    private function validateSting(array &$items)
+    {
+        $businessesModel = new BusinessesModel();
+        $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
+
+        foreach ($items as $itemKey => $item) {
+
+            //Check if itemsCount is more than 0 // Общо количество: [n] бр.
+            if ($item['parsed']['itemsCount'] === 0) {
+                $items[$itemKey]['error'] = 'Общо количество: е 0';
+                continue;
+            }
+
+            //Check recipient text
+            if (empty($item['parsed']['recipient']['result']['name'])) {
+                $items[$itemKey]['error'] = 'Не е намерен получател';
+                continue;
+            }
+
+            //Search for recipient number
+            $recipientNumber = $item['parsed']['recipient']['result']['idNumber'];
+            if (empty($recipientNumber)) {
+                $items[$itemKey]['error'] = 'Не е намерен ИН Номер на получател';
+                continue;
+            }
+
+            //Search for business by recipient number
+            $business = $businessesModel->where('in_number', $recipientNumber)->first();
+            if (!$business) {
+                $items[$itemKey]['error'] = 'Не е намерен бизнес с ИН Номер: ' . $recipientNumber;
+                continue;
+            }
+            $items[$itemKey]['business'] = $business;
+
+            //Search for at least one (not empty) item from invoiceItems['results']
+            $validInvoiceItems = 0;
+            foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
+                if (!empty($invoiceItem['designation'])) {
+                    $validInvoiceItems++;
+                }
+            }
+            if ($validInvoiceItems === 0) {
+                $items[$itemKey]['error'] = 'Не е намерен нито един артикул';
+                continue;
+            }
+
+
+            //Validate invoice number
+            if (empty($item['parsed']['invoiceInfo']['result']['number'])) {
+                $items[$itemKey]['error'] = 'Не е намерен номер на фактура';
+                continue;
+            }
+
+            //Validate if this invoice number is already added
+            $invoiceNumber = $item['parsed']['invoiceInfo']['result']['number'];
+            $invoiceExists = $purchaseByDocumentDataModel->where('invoice_number', $invoiceNumber)->first();
+            if ($invoiceExists) {
+                $items[$itemKey]['error'] = 'Фактура с номер: ' . $invoiceNumber . ' вече е добавена';
+                continue;
+            }
+
+
+            $items[$itemKey]['success'] = true;
+        }
+    }
+
+
+
+
     private function parseFioniksFarma(): array
     {
         $items = [];
@@ -384,7 +662,7 @@ class Add extends BaseController
             }
 
             //Validate total price
-            if($item['invoiceType'] === 1){
+            if ($item['invoiceType'] === 1) {
                 $totalPriceFromItems = 0;
                 foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
                     $totalPriceFromItems += $invoiceItem['value'];
@@ -395,7 +673,7 @@ class Add extends BaseController
                     $items[$itemKey]['error'] = "Сумата от елементите: {$totalPriceFromItems} е различна от сумата от фактурата: {$totalPriceFromInvoice}";
                     continue;
                 }
-            } elseif($item['invoiceType'] === 2){
+            } elseif ($item['invoiceType'] === 2) {
                 $totalPriceFromItems = 0;
                 foreach ($item['parsed']['invoiceItems']['result'] as $invoiceItem) {
                     $totalPriceFromItems += $invoiceItem['priceWithVAT'];
@@ -410,14 +688,14 @@ class Add extends BaseController
 
 
             //Validate price discount
-            if($item['invoiceType'] === 1){
+            if ($item['invoiceType'] === 1) {
                 $sum1ToValidate = $item['parsed']['invoicePrice']['result']['totalPrice'] - $item['parsed']['invoicePrice']['result']['tradeDiscount'];
                 $sum2ToValidate = $item['parsed']['invoicePrice']['result']['taxBase9'] + $item['parsed']['invoicePrice']['result']['taxBase20'] + $item['parsed']['invoicePrice']['result']['taxBase0'];
 
                 $sum1ToValidate = NumberFormat::formatPrice($sum1ToValidate);
                 $sum2ToValidate = NumberFormat::formatPrice($sum2ToValidate);
 
-                if($sum1ToValidate != $sum2ToValidate){
+                if ($sum1ToValidate != $sum2ToValidate) {
                     $items[$itemKey]['error'] = "Общата стойност (без търговската отстъпка): {$sum1ToValidate} е различна от сбора на данъчните основи: {$sum2ToValidate}";
                     continue;
                 }

@@ -9,6 +9,12 @@ use App\Models\PBDFioniksFarmaInvoicePaymentModel;
 use App\Models\PBDFioniksFarmaInvoicePriceModel;
 use App\Models\PBDFioniksFarmaRecipientModel;
 use App\Models\PBDFioniksFarmaSupplierModel;
+use App\Models\PBDStingDeliveryModel;
+use App\Models\PBDStingInvoiceItemsModel;
+use App\Models\PBDStingInvoicePaymentModel;
+use App\Models\PBDStingInvoicePriceModel;
+use App\Models\PBDStingRecipientModel;
+use App\Models\PBDStingSupplierModel;
 use App\Models\PurchaseByDocumentDataModel;
 use App\Models\VatPurchaseJournalsModel;
 use App\Models\VPJAsterEntitiesModel;
@@ -47,7 +53,26 @@ class History extends BaseController
         $pbdDetails = $purchaseByDocumentDataModel->find($pbdId);
 
         if((int)$pbdDetails['provider_id'] === 1){
+            $pbdStingRecipientModel = new PBDStingRecipientModel();
+            $pbdStingSupplierModel = new PBDStingSupplierModel();
+            $pbdStingDeliveryModel = new PBDStingDeliveryModel();
+            $pbdStingInvoicePriceyModel = new PBDStingInvoicePriceModel();
+            $pbdStingInvoicePaymentModel = new PBDStingInvoicePaymentModel();
+            $pbdStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
 
+            $data = [
+                'data' => $pbdDetails,
+                'recipient' => $pbdStingRecipientModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'supplier' => $pbdStingSupplierModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'delivery' => $pbdStingDeliveryModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'invoice_price' => $pbdStingInvoicePriceyModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'invoice_payment' => $pbdStingInvoicePaymentModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'invoice_items' => $pbdStingInvoiceItemsModel->where('purchase_by_document_id', $pbdId)->findAll(),
+            ];
+            //print_r2($data,1);
+            $this->viewData['data'] = $data;
+
+            return view('PurchaseByDocument/History/Sting/View', $this->viewData);
         } elseif((int)$pbdDetails['provider_id'] === 2){
             $pbdFioniksFarmaRecipientModel = new PBDFioniksFarmaRecipientModel();
             $pbdFioniksFarmaSupplierModel = new PBDFioniksFarmaSupplierModel();
@@ -78,10 +103,26 @@ class History extends BaseController
 
     public function delete(int $pbdId): \CodeIgniter\HTTP\RedirectResponse
     {
+
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
         $pbdDetails = $purchaseByDocumentDataModel->find($pbdId);
 
         if((int)$pbdDetails['provider_id'] === 1){
+
+            $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
+            $pbdStingRecipientModel = new PBDStingRecipientModel();
+            $pbdStingSupplierModel = new PBDStingSupplierModel();
+            $pbdStingDeliveryModel = new PBDStingDeliveryModel();
+            $pbdStingInvoicePriceyModel = new PBDStingInvoicePriceModel();
+            $pbdStingInvoicePaymentModel = new PBDStingInvoicePaymentModel();
+            $pbdStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
+
+            $pbdStingRecipientModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdStingSupplierModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdStingDeliveryModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdStingInvoicePriceyModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdStingInvoicePaymentModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdStingInvoiceItemsModel->where('purchase_by_document_id', $pbdId)->delete();
 
         } elseif((int)$pbdDetails['provider_id'] === 2){
             $pbdFioniksFarmaRecipientModel = new PBDFioniksFarmaRecipientModel();
@@ -112,8 +153,18 @@ class History extends BaseController
         $pbdDetails = $purchaseByDocumentDataModel->find($pbdId);
 
         // Set headers for file download
-        header('Content-Type: text/plain');
-        header('Content-Disposition: attachment; filename="'.$pbdDetails['invoice_number'].'.txt"');
+        if((int)$pbdDetails['provider_id'] === 1){
+
+            //in $pbdDetails['source_content'] find meta tag with meta http-equiv="Content-Type" and remove it
+            $pbdDetails['source_content'] = preg_replace('/<meta http-equiv="Content-Type" content="text\/html; charset=Windows-1251">/', '', $pbdDetails['source_content']);
+
+            header('Content-Type: text/html; charset=Windows-1251');
+            header('Content-Disposition: attachment; filename="'.$pbdDetails['invoice_number'].'.html"');
+            //set header encoding to be windows-1251
+        } else {
+            header('Content-Type: text/plain');
+            header('Content-Disposition: attachment; filename="'.$pbdDetails['invoice_number'].'.txt"');
+        }
 
         // Use output buffering to capture content
         ob_start();
