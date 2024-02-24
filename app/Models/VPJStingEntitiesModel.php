@@ -20,6 +20,7 @@ class VPJStingEntitiesModel extends Model
         'status',
         'status_details',
         'export_date',
+        'export_date_full',
         'doc_n',
         'doc_type',
         'doc_date',

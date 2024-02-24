@@ -451,6 +451,7 @@ class Add extends BaseController
 
                 $exportDate = str_replace('г.', '', $parsedDataValue['C']);
                 $exportDate = date('Y-m', strtotime($exportDate));
+                $exportDateFull = date('Y-m-d', strtotime($exportDate));
 
                 $parsedDataEntity = [
                     'vat_purchase_journals_id' => $vatPurchaseJournalId,
@@ -460,6 +461,7 @@ class Add extends BaseController
                     'status' => $parsedDataValue['status'],
                     'status_details' => implode(',', $parsedDataValue['status_details']),
                     'export_date' => $exportDate,
+                    'export_date_full' => $exportDateFull,
                     'doc_n' => $parsedDataValue['A'],
                     'doc_type' => $parsedDataValue['B'],
                     'doc_date' => $parsedDataValue['C'],

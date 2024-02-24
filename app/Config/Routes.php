@@ -72,8 +72,14 @@ $routes->get('/purchase-by-document/view/(:any)', 'PurchaseByDocument\History::v
 
 
 
+$routes->get('/reference/dds-vs-items-from-invoice', 'Reference\DdsVsItems::view/$1', ['filter' => 'authFilter']);
 
 
+
+
+
+
+$routes->get('/fixes/vat-purchase-journals/sting-export-date-full', 'Fixes\VatPurchaseJournals::stingExportDateFull/');
 
 
 $routes->get('/test/txt/parse', 'Test\txt::parse/');
