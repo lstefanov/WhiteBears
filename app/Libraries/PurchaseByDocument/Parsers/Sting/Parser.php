@@ -21,11 +21,28 @@ class Parser
         //Check for Invoice Type
         $this->checkInvoiceType($fileContent);
 
-        $encoding = mb_detect_encoding($fileContent, "UTF-8, Windows-1251, ASCII", true);
-        if($encoding === 'UTF-8' ){
-            //convert $fileContent to Windows-1251
+        //FIX encoding and headers in HTML content
+        //search for meta charset=Windows-1251 header
+        if(strpos($fileContent, 'charset=windows-1251') !== false){
+            $encoding = mb_detect_encoding($fileContent, "UTF-8, Windows-1251, ASCII", true);
+            if($encoding === 'UTF-8' ){
+                //convert $fileContent to Windows-1251
+                $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
+            }
+        } else {
+            $searchMetaTag = '<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">';
+
+            $pattern = '/<head>/i';
+
+            // Define the replacement string
+            $replacement = "<head>\n    " . $searchMetaTag;
+
+            // Replace the first occurrence of the <head> tag with the <head> tag followed by the meta tag
+            $fileContent = preg_replace($pattern, $replacement, $fileContent, 1);
             $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
         }
+
+
 
         $dom = new DOMDocument();
         @$dom->loadHTML($fileContent);

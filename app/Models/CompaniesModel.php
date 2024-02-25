@@ -15,6 +15,8 @@ class CompaniesModel extends Model
     protected $protectFields = true;
     protected $allowedFields = [
         'name',
+        'alias_1',
+        'alias_2',
         'client_number',
         'active',
         'deleted',

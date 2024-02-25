@@ -73,6 +73,7 @@ class Items
 
     private function getInvoiceItems()
     {
+        $this->result = [];
         $foundedItems = [];
         $startItemsSection = false;
         foreach ($this->fileContentByLines as $itemKey => $item) {
@@ -96,7 +97,6 @@ class Items
         if (count($foundedItems) > 1) {
             array_pop($foundedItems);
         }
-
 
         foreach ($foundedItems as $foundedItemKey => $foundedItem) {
             $element = [

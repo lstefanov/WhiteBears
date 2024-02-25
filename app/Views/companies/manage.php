@@ -43,6 +43,17 @@
                     <input type="text" name="client_number" class="form-control" id="client_number" value="<?= old('client_number', $company['client_number'] ?? '' ) ?>" required />
                 </div>
 
+                <hr style="opacity: 1" />
+
+                <div class="mb-4">
+                    <label for="alias_1" class="form-label h6">Алиас 1:</label>
+                    <input type="text" name="alias_1" class="form-control" id="alias_1" value="<?= old('alias_1', $company['alias_1'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_2" class="form-label h6">Алиас 2:</label>
+                    <input type="text" name="alias_2" class="form-control" id="alias_2" value="<?= old('alias_2', $company['alias_2'] ?? '' ) ?>" />
+                </div>
 
                 <hr style="opacity: 1" />
 

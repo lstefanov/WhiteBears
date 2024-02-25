@@ -49,6 +49,8 @@ class Companies extends BaseController
 
         $data = [
             'name' => $this->request->getPost('name'),
+            'alias_1' => $this->request->getPost('alias_1'),
+            'alias_2' => $this->request->getPost('alias_2'),
             'client_number' => $this->request->getPost('client_number')
         ];
 
