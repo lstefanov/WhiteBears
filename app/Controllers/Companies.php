@@ -60,12 +60,6 @@ class Companies extends BaseController
             return redirect()->to("companies/manage?action={$action}&id=$companyId")->withInput()->with('errors', 'Вече съществува обект с това име!');
         }
 
-        //check for company with same client number
-        $company = $companiesModel->where('client_number', $data['client_number'])->first();
-        if($company && (int)$company['id'] !== $companyId){
-            return redirect()->to("companies/manage?action={$action}&id=$companyId")->withInput()->with('errors', 'Вече съществува обект с този клиентски номер!');
-        }
-
         if($action === 'add'){
             $companiesModel->insert($data);
             $companyId = $companiesModel->getInsertID();
