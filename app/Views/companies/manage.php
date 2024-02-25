@@ -40,7 +40,7 @@
 
                 <div class="mb-4">
                     <label for="code" class="form-label h5">Клиентски номер:</label>
-                    <input type="text" name="client_number" class="form-control" id="client_number" value="<?= old('client_number', $company['client_number'] ?? '' ) ?>" required />
+                    <input type="text" name="client_number" class="form-control" id="client_number" value="<?= old('client_number', $company['client_number'] ?? '' ) ?>" />
                 </div>
 
                 <hr style="opacity: 1" />
