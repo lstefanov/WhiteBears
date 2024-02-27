@@ -52,6 +52,10 @@ class Parser
                 continue;
             }
 
+            if(empty($row['I'])){
+                continue;
+            }
+
             if (!isset($invoicesData[$row['I']])) {
                 try {
                     $date = \DateTime::createFromFormat('d.m.Y', $row['J']);
