@@ -15,15 +15,15 @@
         <div class="col-12">
             <?php if($parsedDataStatistics['errors'] === 0){ ?>
                 <div class="alert alert-success" role="alert">
-                    Всички документ за покупка са валидни
+                    Всички документи за покупка са валидни
                 </div>
             <?php }elseif($parsedDataStatistics['total'] > $parsedDataStatistics['errors']){ ?>
                 <div class="alert alert-warning" role="alert">
-                    Има невалидни документ за покупка
+                    Има невалидни документи за покупка
                 </div>
             <?php } else { ?>
                 <div class="alert alert-danger" role="alert">
-                    Няма валидни документ за покупка !
+                    Няма валидни документи за покупка !
                 </div>
             <?php } ?>
         </div>

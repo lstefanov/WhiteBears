@@ -3,6 +3,8 @@
 namespace App\Controllers\PurchaseByDocument;
 
 use App\Controllers\BaseController;
+use App\Models\PBDAsterInvoiceItemsModel;
+use App\Models\PBDAsterRecipientModel;
 use App\Models\PBDFioniksFarmaDeliveryModel;
 use App\Models\PBDFioniksFarmaInvoiceItemsModel;
 use App\Models\PBDFioniksFarmaInvoicePaymentModel;
@@ -94,7 +96,17 @@ class History extends BaseController
 
             return view('PurchaseByDocument/History/FioniksFarma/View', $this->viewData);
         } elseif((int)$pbdDetails['provider_id'] === 3){
+            $pbdAsterRecipientModel = new PBDAsterRecipientModel();
+            $pbdAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
 
+            $data = [
+                'data' => $pbdDetails,
+                'recipient' => $pbdAsterRecipientModel->where('purchase_by_document_id', $pbdId)->find()[0],
+                'invoice_items' => $pbdAsterInvoiceItemsModel->where('purchase_by_document_id', $pbdId)->findAll(),
+            ];
+            $this->viewData['data'] = $data;
+
+            return view('PurchaseByDocument/History/Aster/View', $this->viewData);
         }
 
         die('Invalid provider!');
@@ -139,7 +151,11 @@ class History extends BaseController
             $pbdFioniksFarmaInvoicePaymentModel->where('purchase_by_document_id', $pbdId)->delete();
             $pbdFioniksFarmaInvoiceItemsModel->where('purchase_by_document_id', $pbdId)->delete();
         } elseif((int)$pbdDetails['provider_id'] === 3){
+            $pbdAsterRecipientModel = new PBDAsterRecipientModel();
+            $pbdAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
 
+            $pbdAsterRecipientModel->where('purchase_by_document_id', $pbdId)->delete();
+            $pbdAsterInvoiceItemsModel->where('purchase_by_document_id', $pbdId)->delete();
         }
 
         $purchaseByDocumentDataModel->delete($pbdId);

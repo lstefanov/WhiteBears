@@ -1,0 +1,5 @@
+CREATE TABLE `pbd_aster_recipient` ( `id` INT NOT NULL AUTO_INCREMENT , `purchase_by_document_id` INT NOT NULL , `company_id` INT NOT NULL , `company_name` VARCHAR(255) NOT NULL , `company_name_real` VARCHAR(255) NOT NULL , `business_name` VARCHAR(255) NOT NULL , `business_id` INT NOT NULL , `business_in_number` VARCHAR(255) NOT NULL , `address` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`), INDEX (`purchase_by_document_id`), INDEX (`company_id`), INDEX (`business_id`)) ENGINE = InnoDB;
+
+
+CREATE TABLE `pbd_aster_invoice_items` ( `id` INT NOT NULL AUTO_INCREMENT , `purchase_by_document_id` INT NOT NULL , `product_code` VARCHAR(255) NOT NULL , `product_name` VARCHAR(255) NOT NULL , `pharmacy_code` VARCHAR(255) NOT NULL , `quantity` INT NOT NULL , `totalValue` DECIMAL(10,2) NOT NULL , `price_per_item` DECIMAL(10,2) NOT NULL , PRIMARY KEY (`id`), INDEX (`purchase_by_document_id`)) ENGINE = InnoDB;
+ALTER TABLE `pbd_aster_invoice_items` CHANGE `pharmacy_code` `pharmacy_code` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;

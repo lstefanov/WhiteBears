@@ -5,6 +5,8 @@ namespace App\Controllers\PurchaseByDocument;
 use App\Controllers\BaseController;
 use App\Helpers\NumberFormat;
 use App\Models\BusinessesModel;
+use App\Models\PBDAsterInvoiceItemsModel;
+use App\Models\PBDAsterRecipientModel;
 use App\Models\PBDFioniksFarmaDeliveryModel;
 use App\Models\PBDFioniksFarmaInvoiceItemsModel;
 use App\Models\PBDFioniksFarmaInvoicePaymentModel;
@@ -24,6 +26,7 @@ use App\Models\VatPurchaseJournalsModel;
 use App\Models\VPJFioniksFarmaEntitiesModel;
 use CodeIgniter\HTTP\RedirectResponse;
 use Config\Services;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class Add extends BaseController
 {
@@ -48,11 +51,31 @@ class Add extends BaseController
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function submit(): RedirectResponse
     {
+        //set memory limit to 0
+        ini_set('memory_limit', '-1');
+        //set max execution time to unlimited
+        set_time_limit(0);
+
+        // Adjust maximum file size to 100MB
+        ini_set('upload_max_filesize', '100M');
+        // Adjust maximum size of POST data to 101MB
+        ini_set('post_max_size', '101M');
+        // Increase the maximum number of files allowed to be uploaded simultaneously
+        ini_set('max_file_uploads', '1000');
+
+        //display all errors
+        ini_set('display_errors', '1');
+        ini_set('display_startup_errors', '1');
+        error_reporting(E_ALL);
+
+
         $parsedData = [];
         $providerId = (int)$this->request->getPost('providers');
-
 
         if ($providerId === 1) {
             $parsedData = $this->parseSting();
@@ -61,7 +84,7 @@ class Add extends BaseController
             $parsedData = $this->parseFioniksFarma();
             $this->validateFioniksFarma($parsedData);
         } elseif ($providerId === 3) {
-            //$parsedData = $this->parseAster();
+            $parsedData = $this->parseAster();
         }
 
 
@@ -96,6 +119,23 @@ class Add extends BaseController
 
     public function submit_preview(): string
     {
+        //set memory limit to 0
+        ini_set('memory_limit', '-1');
+        //set max execution time to unlimited
+        set_time_limit(0);
+
+        // Adjust maximum file size to 100MB
+        ini_set('upload_max_filesize', '100M');
+        // Adjust maximum size of POST data to 101MB
+        ini_set('post_max_size', '101M');
+        // Increase the maximum number of files allowed to be uploaded simultaneously
+        ini_set('max_file_uploads', '1000');
+
+        //display all errors
+        ini_set('display_errors', '1');
+        ini_set('display_startup_errors', '1');
+        error_reporting(E_ALL);
+
         $this->viewData['assets']['js'] = 'PurchaseByDocument/submit-preview.js';
 
         $this->viewData['parsedData'] = $this->session->get('PbParsedData');
@@ -107,7 +147,7 @@ class Add extends BaseController
         } elseif ($provider === 2) {
             return view('PurchaseByDocument/SubmitPreview/FioniksFarma/Preview', $this->viewData);
         } elseif ($provider === 3) {
-            //return view('VatPurchaseJournals/SubmitPreview/Aster', $this->viewData);
+            return view('PurchaseByDocument/SubmitPreview/Aster/Preview', $this->viewData);
         }
 
         die('Invalid provider !');
@@ -126,7 +166,7 @@ class Add extends BaseController
         } elseif ($provider === 2) {
             $this->finishFioniksFarma();
         } elseif ($provider === 3) {
-            //$this->finishAster();
+            $this->finishAster();
         }
 
         return redirect()->to('/purchase-by-document/done');
@@ -419,15 +459,128 @@ class Add extends BaseController
     }
 
 
+    /**
+     * @throws \ReflectionException
+     */
+    private function finishAster()
+    {
+        $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
+        $pbdAsterRecipientModel = new PBDAsterRecipientModel();
+        $pbdAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
+
+        $parsedData = $this->session->get('PbParsedData');
+
+        foreach ($parsedData as $data) {
+
+            if(isset($data['error'])){ continue; }
+
+            //Save base data for added document for "Покупка по документ"
+            $purchaseByDocumentData = [
+                'provider_id' => 3,
+                'business_id' => $data['parsed']['founded_business_id'],
+                'document_type' => 'file',
+                'invoice_number' => $data['parsed']['invoice_number'],
+                'invoice_date' => $data['parsed']['invoice_date'],
+                'amount' => $data['parsed']['totalPrice'],
+                'payment_amount' => $data['parsed']['totalPrice'],
+                'items' => count($data['parsed']['items']),
+                'entities' => $data['parsed']['itemsCount'],
+                'nzok' => 0,
+                'source_type' => $data['type'],
+                'source_name' => $data['name'],
+                'source_content' => $data['originalContent'],
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+            $purchaseByDocumentDataModel->insert($purchaseByDocumentData);
+            $purchaseByDocumentId = $purchaseByDocumentDataModel->getInsertID();
+
+
+            //Save recipient data
+            $recipientData = [
+                'purchase_by_document_id' => $purchaseByDocumentId,
+                'company_id' => $data['parsed']['founded_company_id'],
+                'company_name' => $data['parsed']['company_name'],
+                'company_name_real' => $data['parsed']['founded_company_name'],
+                'business_name' => $data['parsed']['founded_business_name'],
+                'business_id' => $data['parsed']['founded_business_id'],
+                'business_in_number' => $data['parsed']['founded_business_in_number'],
+                'address' => $data['parsed']['address'],
+            ];
+            $pbdAsterRecipientModel->insert($recipientData);
+
+
+            //Save invoice items
+            foreach ($data['parsed']['items'] as $invoiceItem) {
+                $invoiceItemData = [
+                    'purchase_by_document_id' => $purchaseByDocumentId,
+                    'product_code' => $invoiceItem['product_code'],
+                    'product_name' => $invoiceItem['product_name'],
+                    'pharmacy_code' => $invoiceItem['pharmacy_code'],
+                    'quantity' => $invoiceItem['quantity'],
+                    'totalValue' => $invoiceItem['totalValue'],
+                    'price_per_item' => $invoiceItem['price_per_item'],
+                ];
+                $pbdAsterInvoiceItemsModel->insert($invoiceItemData);
+            }
+        }
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    private function parseAster(): array
+    {
+        $items = [];
+        $files = $this->request->getFiles();
+
+        //Parse attached files
+        if (!empty($files['files'])) {
+            foreach ($files['files'] as $file) {
+
+                if (empty($file->getName())) {
+                    continue;
+                }
+
+                //Parse content
+                $asterParser = new \App\Libraries\PurchaseByDocument\Parsers\Aster\Parser();
+                $asterParser->execute($file->getTempName());
+
+                $uuID = uniqid();
+                $uploadedFileDir = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR;
+                if (!is_dir($uploadedFileDir)) {
+                    mkdir($uploadedFileDir, 0777, true);
+                }
+                $uploadedFileLocation = $uploadedFileDir . $uuID . '.' . pathinfo($file->getName(), PATHINFO_EXTENSION);
+                move_uploaded_file($file->getTempName(), $uploadedFileLocation);
+
+                $parsedResult = $asterParser->getResult();
+
+                foreach ($parsedResult as $parsedResultValue) {
+                    $items[] = [
+                        'type' => 'file',
+                        'name' => $file->getName(),
+                        'originalContent' => '',
+                        'parsed' => $parsedResultValue,
+                        'invoiceType' => $asterParser->getInvoiceType(),
+                        'fileTmpName' => $uploadedFileLocation
+                    ];
+
+                    if(isset($parsedResultValue['error'])){
+                        $items[count($items)-1]['error'] = $parsedResultValue['error'];
+                    }
+                }
+
+            }
+        }
+
+        return $items;
+    }
+
+
+
     private function parseSting(): array
     {
-        // Adjust maximum file size to 100MB
-        ini_set('upload_max_filesize', '100M');
-        // Adjust maximum size of POST data to 101MB
-        ini_set('post_max_size', '101M');
-        // Increase the maximum number of files allowed to be uploaded simultaneously
-        ini_set('max_file_uploads', '1000');
-
         $items = [];
         $files = $this->request->getFiles();
         $texts = $this->request->getPost('texts') ?? [];

@@ -16,43 +16,45 @@
                             <select class="form-select" name="providers" id="providers" required>
                                 <option selected value="">- изберете доставчик -</option>
                                 <?php foreach ($providers as $provider){ ?>
-                                    <option value="<?= $provider['id'] ?>" <?= (int)$provider['id'] == 3 ? 'disabled' : '' ?>><?= $provider['name'] ?></option>
+                                    <option value="<?= $provider['id'] ?>"><?= $provider['name'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
 
-
-                        <div class="mb-3 mt-5">
-                            <label for="businesses" class="form-label h5">Добавяне на документи:</label>
-                        </div>
-
-                        <div class="mb-2 mt-1">
-                            <label for="businesses" class="form-label">Фаилове:</label>
-                            <input class="form-control" type="file" id="files" name="files[]" multiple accept=".txt,.html" />
-                        </div>
-
-                        <hr />
-
-                        <div class="mb-5">
-                            <label for="businesses" class="form-label d-block">Текст:</label>
-
-                            <div id="text-data-holder">
-
+                        <div id="data-holder" style="display: none;">
+                            <div class="mb-3 mt-5">
+                                <label for="businesses" class="form-label h5">Добавяне на документи:</label>
                             </div>
 
-                            <button type="button" class="btn btn-info btn-icon-split mt-1" id="add-text-btn">
-                                <span class="icon text-white-50">
-                                    <i class="fas fa-plus"></i>
-                                </span>
-                                <span class="text">добавяне на текстово поле</span>
-                            </button>
+                            <div class="mb-2 mt-1">
+                                <label for="businesses" class="form-label">Фаилове:</label>
+                                <input class="form-control" type="file" id="files" name="files[]" multiple accept=".txt,.html,.xlsx" />
+                                <small>Позволени файлови формати: <span id="accepted-files-info" style="font-weight: bold;">-</span></small>
+                            </div>
 
+                            <hr />
+
+                            <div class="mb-5" id="add-via-text-field">
+                                <label for="businesses" class="form-label d-block">Текст:</label>
+
+                                <div id="text-data-holder">
+
+                                </div>
+
+                                <button type="button" class="btn btn-info btn-icon-split mt-1" id="add-text-btn">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-plus"></i>
+                                    </span>
+                                    <span class="text">добавяне на текстово поле</span>
+                                </button>
+
+                            </div>
                         </div>
 
                         <hr />
 
                         <div class="mb-3 mt-5">
-                            <button type="submit" class="btn btn-primary" id="submit-btn">Обработка</button>
+                            <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Обработка</button>
                         </div>
 
 

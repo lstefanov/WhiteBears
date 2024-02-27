@@ -41,10 +41,12 @@
                                         <span class="text">Преглед</span>
                                     </a>
 
-                                    <a href="<?= base_url('purchase-by-document/download/' . $item['id']) ?>" target="_blank" class="btn btn-primary btn-icon-split btn-sm mr-3">
-                                        <span class="icon text-white-50"><i class="fas fa-download"></i></span>
-                                        <span class="text">Изтегляне</span>
-                                    </a>
+                                    <?php if((int)$item['provider_id'] !== 3){ ?>
+                                        <a href="<?= base_url('purchase-by-document/download/' . $item['id']) ?>" target="_blank" class="btn btn-primary btn-icon-split btn-sm mr-3">
+                                            <span class="icon text-white-50"><i class="fas fa-download"></i></span>
+                                            <span class="text">Изтегляне</span>
+                                        </a>
+                                    <?php } ?>
 
                                     <a href="#" data-id="<?= $item['id'] ?>" class="btn btn-danger btn-icon-split btn-sm delete-vpj">
                                         <span class="icon text-white-50"><i class="fas fa-trash"></i></span>

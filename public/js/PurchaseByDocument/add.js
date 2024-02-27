@@ -29,6 +29,37 @@ class PurchaseByDocumentAdd {
         $('body').on('click', '[data-action="remove-text-item"]', function() {
             $(this).closest('[data-type="text-item"]').remove();
         });
+
+        $('#providers').on('change', function() {
+            let providerId = parseInt($(this).val());
+
+            //Show /hide option for adding via text
+            if(providerId === 3){
+                $('#add-via-text-field').hide();
+            } else {
+                $('#add-via-text-field').show();
+            }
+
+            //show/hide option for adding via file/text
+            if(isNaN(providerId)){
+                $('#data-holder').hide();
+                $('#submit-btn').prop('disabled', true);
+            } else {
+                $('#data-holder').show();
+                $('#submit-btn').prop('disabled', false);
+            }
+
+            if(providerId === 1){
+                $('#files').attr('accept', '.html');
+                $('#accepted-files-info').html('.html');
+            } else if(providerId === 2){
+                $('#files').attr('accept', '.txt');
+                $('#accepted-files-info').html('.txt');
+            } else if(providerId === 3){
+                $('#files').attr('accept', '.xlsx');
+                $('#accepted-files-info').html('.xlsx');
+            }
+        });
     }
 
 }
