@@ -80,6 +80,7 @@ $routes->get('/reference/dds-vs-items-from-invoice', 'Reference\DdsVsItems::view
 
 
 $routes->get('/fixes/vat-purchase-journals/sting-export-date-full', 'Fixes\VatPurchaseJournals::stingExportDateFull/');
+$routes->get('/fixes/vat-purchase-journals/aster-export-date-full', 'Fixes\VatPurchaseJournals::asterExportDateFull/');
 
 
 $routes->get('/test/txt/parse', 'Test\txt::parse/');

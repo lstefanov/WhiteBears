@@ -20,6 +20,7 @@ class VPJAsterEntitiesModel extends Model
         'status',
         'status_details',
         'export_date',
+        'export_date_full',
         'invoice',
         'invoice_date',
         'eik',

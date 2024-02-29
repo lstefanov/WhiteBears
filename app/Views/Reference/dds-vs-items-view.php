@@ -11,7 +11,7 @@
                 <select name="provider_id" id="provider-id" class="form-select" style="float: left; width: 300px;">
                     <option value="0">- изберете доставчик -</option>
                     <?php foreach ($providers as $provider){ ?>
-                        <option value="<?= $provider['id'] ?>" <?php echo ($selectedProviderId === $provider['id']) ? 'selected' : ''; ?> <?php if((int)$provider['id'] === 3){ echo 'disabled'; } ?>><?= $provider['name'] ?></option>
+                        <option value="<?= $provider['id'] ?>" <?php echo ($selectedProviderId === $provider['id']) ? 'selected' : ''; ?>><?= $provider['name'] ?></option>
                     <?php } ?>
                 </select>
             </div>
@@ -98,6 +98,10 @@
                                     <?= $row['payment_summary'] ?>
 
                                     <?php if((int) $row['status'] === 2 ){ ?>
+                                        &nbsp;/&nbsp;<?= $row['purchase_by_document_data']['payment_amount'] ?>
+                                    <?php } ?>
+
+                                    <?php if( (int) $row['status'] === 1 AND ($row['payment_summary'] - $row['purchase_by_document_data']['payment_amount'] != 0.00)){ ?>
                                         &nbsp;/&nbsp;<?= $row['purchase_by_document_data']['payment_amount'] ?>
                                     <?php } ?>
                                 </td>

@@ -1,0 +1,1 @@
+ALTER TABLE `vpj_aster_entities` ADD `export_date_full` DATE NULL DEFAULT NULL AFTER `export_date`;

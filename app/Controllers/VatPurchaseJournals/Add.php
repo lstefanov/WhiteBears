@@ -308,6 +308,7 @@ class Add extends BaseController
                     'status' => $parsedDataValue['status'],
                     'status_details' => implode(',', $parsedDataValue['status_details']),
                     'export_date' => date('Y-m', strtotime($_exportDate)),
+                    'export_date_full' => $_exportDate,
                     'invoice' => $invoiceNumbers,
                     'invoice_date' => $parsedDataValue['F'],
                     'eik' => $parsedDataValue['H'],

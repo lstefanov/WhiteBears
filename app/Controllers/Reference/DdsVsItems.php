@@ -254,7 +254,88 @@ class DdsVsItems extends BaseController
 
                 $data[] = $entity;
             }
+        }
 
+
+
+        if ($selectedProviderId === 3) {
+            $vpjAsterEntitiesModel = new VPJAsterEntitiesModel();
+            $entitiesQuery = $vpjAsterEntitiesModel->where('status', 'success')
+                ->where('business_id', $selectedBusinessId)
+                ->where('provider_id', $selectedProviderId)
+                ->orderBy('invoice_date', 'asc');
+
+            if ($dateFrom !== '') {
+                $entitiesQuery->where('export_date_full >=', $dateFrom);
+            }
+            if ($dateTo !== '') {
+                $entitiesQuery->where('export_date_full <=', $dateTo);
+            }
+            if ($invoiceNumber !== '') {
+                $entitiesQuery->where('invoice', $invoiceNumber);
+            }
+            if ($priceFrom !== '') {
+                $entitiesQuery->where('payment_summary >=', $priceFrom);
+            }
+            if ($priceTo !== '') {
+                $entitiesQuery->where('payment_summary <=', $priceTo);
+            }
+
+            $entities = $entitiesQuery->findAll();
+
+            foreach ($entities as $entityKey => $entity) {
+
+                if($selectedDocumentType !== 0){
+
+                    $h_doc_type = '901';
+                    if ($entity['total_price_inc_vat'] < 0) {
+                        $h_doc_type = 904;
+                    }
+
+                    if($selectedDocumentType !== $h_doc_type){
+                        continue;
+                    }
+                }
+
+                //Fix for UI view
+                $entity['doc_n'] = $entity['invoice'];
+                $entity['export_date_full'] = $entity['invoice_date'];
+                $entity['payment_summary'] = $entity['price_without_vat'];
+
+                //Search for purchase_by_document that match invoice id
+                $purchaseByDocumentResult = $this->db->query("
+                    SELECT id, payment_amount 
+                    FROM purchase_by_document WHERE invoice_number = ?",
+                    [$entity['invoice']])
+                    ->getResult();
+
+                $status = 3; // default status is no found
+
+                //Change Status to  found
+                if(!empty($purchaseByDocumentResult)){
+                    $status = 1;
+
+                    $entity['purchase_by_document_data'] = (array) $purchaseByDocumentResult[0];
+                }
+
+                //if founded check if payment amount is the same
+                if($status === 1){
+                    $paymentAmount = $purchaseByDocumentResult[0]->payment_amount;
+                    if($paymentAmount !== $entity['price_without_vat']){
+                        if($paymentAmount - $entity['price_without_vat'] >= 0.03 || $paymentAmount - $entity['price_without_vat'] <= -0.03){
+                            $status = 2;
+                        }
+                    }
+                }
+
+                $entity['status'] = $status;
+
+                if($matchStatus !== 0 && $status !== $matchStatus){
+                    continue;
+                }
+
+                $data[] = $entity;
+            }
         }
 
 
