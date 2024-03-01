@@ -50,8 +50,8 @@ class PurchaseByDocumentAdd {
             }
 
             if(providerId === 1){
-                $('#files').attr('accept', '.html');
-                $('#accepted-files-info').html('.html');
+                $('#files').attr('accept', '.html, .htm');
+                $('#accepted-files-info').html('.html, .htm');
             } else if(providerId === 2){
                 $('#files').attr('accept', '.txt');
                 $('#accepted-files-info').html('.txt');
