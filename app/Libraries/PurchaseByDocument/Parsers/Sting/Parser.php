@@ -23,10 +23,16 @@ class Parser
 
         //FIX encoding and headers in HTML content
         //search for meta charset=Windows-1251 header
-        if(strpos($fileContent, 'charset=windows-1251') !== false){
+        if(strpos(mb_strtolower($fileContent), 'charset=windows-1251') !== false){
             $encoding = mb_detect_encoding($fileContent, "UTF-8, Windows-1251, ASCII", true);
             if($encoding === 'UTF-8' ){
                 //convert $fileContent to Windows-1251
+                $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
+            }
+
+            if($encoding === 'Windows-1251' ){
+                //convert $fileContent to UTF-8
+                $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'Windows-1251');
                 $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
             }
         } else {
@@ -41,7 +47,6 @@ class Parser
             $fileContent = preg_replace($pattern, $replacement, $fileContent, 1);
             $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
         }
-
 
 
         $dom = new DOMDocument();
@@ -60,7 +65,6 @@ class Parser
             }
             $this->fileContentByLines[] = $rowData;
         }
-
 
         //Get items count
         $itemsCounter = new Assets\ItemsCounter($this->fileContentByLines);
