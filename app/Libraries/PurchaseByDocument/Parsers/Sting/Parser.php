@@ -23,14 +23,14 @@ class Parser
 
         //FIX encoding and headers in HTML content
         //search for meta charset=Windows-1251 header
-        if(strpos(mb_strtolower($fileContent), 'charset=windows-1251') !== false){
+        if (strpos(mb_strtolower($fileContent), 'charset=windows-1251') !== false) {
             $encoding = mb_detect_encoding($fileContent, "UTF-8, Windows-1251, ASCII", true);
-            if($encoding === 'UTF-8' ){
+            if ($encoding === 'UTF-8') {
                 //convert $fileContent to Windows-1251
                 $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
             }
 
-            if($encoding === 'Windows-1251' ){
+            if ($encoding === 'Windows-1251') {
                 //convert $fileContent to UTF-8
                 $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'Windows-1251');
                 $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
@@ -124,7 +124,7 @@ class Parser
 
 
         //get invoice items
-        if($this->invoiceType === 1){
+        if ($this->invoiceType === 1) {
             $invoiceItemsParser = new Assets\Items($this->fileContentByLines);
         } else {
             //skip

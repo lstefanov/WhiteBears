@@ -142,6 +142,7 @@ class DdsVsItems extends BaseController
                     }
                 }
 
+                $entity['doc_n'] = '0' . $entity['doc_n'];
 
                 //Search for purchase_by_document that match invoice id
                 $purchaseByDocumentResult = $this->db->query("

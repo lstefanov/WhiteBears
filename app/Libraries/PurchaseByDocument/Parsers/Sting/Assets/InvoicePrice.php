@@ -47,6 +47,7 @@ class InvoicePrice
             'totalPrice' => '',
             'totalPriceFromSupplier' => '',
             'tradeDiscountPercent' => '',
+            'tradeDiscount' => '',
             'valueOfTheDeal' => '',
             'tax20' => '',
             'totalPriceWithTax' => '',
