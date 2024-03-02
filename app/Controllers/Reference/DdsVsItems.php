@@ -240,12 +240,14 @@ class DdsVsItems extends BaseController
                 if(!empty($purchaseByDocumentResult)){
                     $status = 1;
 
+                    $purchaseByDocumentResult[0]->payment_amount = number_format($purchaseByDocumentResult[0]->payment_amount, 2, '.', '');
                     $entity['purchase_by_document_data'] = (array) $purchaseByDocumentResult[0];
                 }
 
                 //if founded check if payment amount is the same
                 if($status === 1){
                     $paymentAmount = $purchaseByDocumentResult[0]->payment_amount;
+                    $entity['payment_summary'] = number_format($entity['payment_summary'], 2, '.', '');
                     if($paymentAmount !== $entity['payment_summary']){
                         $status = 2;
                     }
