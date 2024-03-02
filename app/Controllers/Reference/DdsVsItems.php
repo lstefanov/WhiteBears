@@ -329,7 +329,7 @@ class DdsVsItems extends BaseController
                 if($status === 1){
                     $paymentAmount = $purchaseByDocumentResult[0]->payment_amount;
                     if($paymentAmount !== $entity['price_without_vat']){
-                        if($paymentAmount - $entity['price_without_vat'] >= 0.03 || $paymentAmount - $entity['price_without_vat'] <= -0.03){
+                        if($paymentAmount - $entity['price_without_vat'] >= 0.06 || $paymentAmount - $entity['price_without_vat'] <= -0.06){
                             $status = 2;
                         }
                     }
