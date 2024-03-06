@@ -61,7 +61,7 @@ class Parser
                     if(strpos($row['J'], '.') !== false){
                         $date = \DateTime::createFromFormat('d.m.Y', $row['J']);
                     } else {
-                        $date = \DateTime::createFromFormat('d/m/Y', $row['J']);
+                        $date = \DateTime::createFromFormat('m/d/Y', $row['J']);
                     }
 
                     if (!$date) {
@@ -71,7 +71,7 @@ class Parser
                 } catch (\Exception $e) {
                     $invoiceDate = null;
                 }
-
+                
                 $invoicesData[$row['I']] = [
                     'invoice_number' => $row['I'],
                     'invoice_date' => $invoiceDate,
