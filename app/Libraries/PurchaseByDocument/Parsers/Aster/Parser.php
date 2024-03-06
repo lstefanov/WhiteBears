@@ -71,11 +71,11 @@ class Parser
                 } catch (\Exception $e) {
                     $invoiceDate = null;
                 }
-                
+
                 $invoicesData[$row['I']] = [
                     'invoice_number' => $row['I'],
                     'invoice_date' => $invoiceDate,
-                    'company_name' => $row['D'],
+                    'company_name' => trim($row['D']),
                     'address' => $row['E'],
                     'itemsCount' => 0,
                     'totalPrice' => 0,
