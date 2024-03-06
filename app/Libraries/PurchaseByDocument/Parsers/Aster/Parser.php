@@ -58,7 +58,12 @@ class Parser
 
             if (!isset($invoicesData[$row['I']])) {
                 try {
-                    $date = \DateTime::createFromFormat('d.m.Y', $row['J']);
+                    if(strpos($row['J'], '.') !== false){
+                        $date = \DateTime::createFromFormat('d.m.Y', $row['J']);
+                    } else {
+                        $date = \DateTime::createFromFormat('d/m/Y', $row['J']);
+                    }
+
                     if (!$date) {
                         throw new \Exception('Invalid date format');
                     }
