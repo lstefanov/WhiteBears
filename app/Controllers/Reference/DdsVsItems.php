@@ -250,12 +250,21 @@ class DdsVsItems extends BaseController
                     $entity['payment_summary'] = number_format($entity['payment_summary'], 2, '.', '');
                     if($paymentAmount !== $entity['payment_summary']){
                         $status = 2;
+                    } else {
+                        $purchaseByDocumentInvoicePriceResult = $this->db->query("
+                            SELECT id
+                            FROM pbd_fioniks_farma_invoice_price WHERE purchase_by_document_id = ? AND (tax_base_9 > 0 OR tax_base_0 > 0)",
+                            [$purchaseByDocumentResult[0]->id])
+                            ->getRow();
+                        if($purchaseByDocumentInvoicePriceResult){
+                            $status = 4;
+                        }
                     }
                 }
 
                 $entity['status'] = $status;
 
-                if($matchStatus !== 0 && $status !== $matchStatus){
+                if( ($matchStatus !== 0 && $status !== $matchStatus) || ($matchStatus === 1 AND !in_array($status, [1,4])) ){
                     continue;
                 }
 

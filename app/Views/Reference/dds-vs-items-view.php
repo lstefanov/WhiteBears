@@ -63,6 +63,7 @@
                     <option value="1" <?php echo ($matchStatus == 1) ? 'selected' : ''; ?>>съвпада</option>
                     <option value="2" <?php echo ($matchStatus == 2) ? 'selected' : ''; ?>>разминаване</option>
                     <option value="3" <?php echo ($matchStatus == 3) ? 'selected' : ''; ?>>липсва</option>
+                    <option value="4" <?php echo ($matchStatus == 4) ? 'selected' : ''; ?>>съвпада ( ДДС: 0%/9%)</option>
                 </select>
             </div>
 
@@ -110,13 +111,15 @@
                                         <span class="badge badge-success">съвпада</span>
                                     <?php }elseif((int) $row['status'] === 2 ){ ?>
                                         <span class="badge badge-warning">разминаване</span>
+                                    <?php }elseif((int) $row['status'] === 4 ){ ?>
+                                        <span class="badge badge-warning">съвпада с ДДС 0%/9% във фактурата</span>
                                     <?php }else{ ?>
                                         <span class="badge badge-danger">липсва</span>
                                     <?php } ?>
                                 </td>
                                 <td>
                                     <a href="<?= base_url('vat-purchase-journals/view/'.$row['vat_purchase_journals_id']) ?>" target="_blank">Дневник за покупки</a>
-                                    <?php if((int) $row['status'] === 1 || (int) $row['status'] === 2 ){ ?>
+                                    <?php if((int) $row['status'] === 1 || (int) $row['status'] === 2 || (int) $row['status'] === 4 ){ ?>
                                         <br />
                                         <a href="<?= base_url('purchase-by-document/view/'.$row['purchase_by_document_data']['id']) ?>" target="_blank">Покупка по документ</a>
                                     <?php } ?>
