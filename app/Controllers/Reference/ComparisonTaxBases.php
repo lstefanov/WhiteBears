@@ -12,6 +12,7 @@ use App\Models\VPJFioniksFarmaEntitiesModel;
 use App\Models\VPJStingEntitiesModel;
 use Config\Database;
 use Config\Services;
+use SebastianBergmann\CodeUnit\Exception;
 
 class ComparisonTaxBases extends BaseController
 {
@@ -158,6 +159,10 @@ class ComparisonTaxBases extends BaseController
                 //Change Status to  found
                 if(!empty($purchaseByDocumentResult)){
                     $status = 1;
+
+                    if (!is_float($purchaseByDocumentResult[0]->tax_base)) {
+                        $purchaseByDocumentResult[0]->tax_base = (float) $purchaseByDocumentResult[0]->tax_base;
+                    }
 
                     $purchaseByDocumentResult[0]->tax_base_amount = number_format($purchaseByDocumentResult[0]->tax_base, 2, '.', '');
                     $entity['purchase_by_document_data'] = (array) $purchaseByDocumentResult[0];
