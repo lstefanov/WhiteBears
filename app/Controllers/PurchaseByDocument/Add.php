@@ -197,6 +197,12 @@ class Add extends BaseController
 
         foreach ($parsedData as $data) {
 
+            //skip empty files with no business data
+            if(empty($data['business'])){
+                continue;
+            }
+
+
             //Save base data for added document for "Покупка по документ"
             $purchaseByDocumentData = [
                 'provider_id' => 2,
@@ -759,6 +765,11 @@ class Add extends BaseController
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
 
         foreach ($items as $itemKey => $item) {
+
+            if(empty($item['originalContent'])){
+                $items[$itemKey]['error'] = 'Файлът е празен';
+                continue;
+            }
 
             //Check if itemsCount is more than 0 // Общо количество: [n] бр.
             if ($item['parsed']['itemsCount'] === 0) {
