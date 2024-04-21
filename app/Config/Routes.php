@@ -73,6 +73,7 @@ $routes->get('/purchase-by-document/view/(:any)', 'PurchaseByDocument\History::v
 
 
 $routes->get('/reference/dds-vs-items-from-invoice', 'Reference\DdsVsItems::view/$1', ['filter' => 'authFilter']);
+$routes->get('/reference/comparison-of-tax-bases', 'Reference\ComparisonTaxBases::view/$1', ['filter' => 'authFilter']);
 
 
 

@@ -89,6 +89,7 @@
         <div id="collapseTwo5" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="<?= base_url('reference/dds-vs-items-from-invoice') ?>">Съпоставка дневник ДДС/заприходена стока по фактури</a>
+                <a class="collapse-item" href="<?= base_url('reference/comparison-of-tax-bases') ?>">Съпоставка данъчни основи</a>
             </div>
         </div>
     </li>
