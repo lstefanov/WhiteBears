@@ -147,7 +147,7 @@ class ComparisonTaxBases extends BaseController
 
                 //Search for purchase_by_document that match invoice id
                 $purchaseByDocumentResult = $this->db->query("
-                    SELECT psip.id, psip.tax_base, psip.purchase_by_document_id
+                    SELECT psip.id, psip.tax_base, psip.purchase_by_document_id, psip.value_of_the_deal, pbd.nzok
                     FROM purchase_by_document AS pbd
                     LEFT JOIN pbd_sting_invoice_price AS psip ON pbd.id = psip.purchase_by_document_id
                     WHERE invoice_number = ?",
@@ -162,6 +162,10 @@ class ComparisonTaxBases extends BaseController
 
                     if (!is_float($purchaseByDocumentResult[0]->tax_base)) {
                         $purchaseByDocumentResult[0]->tax_base = (float) $purchaseByDocumentResult[0]->tax_base;
+                    }
+
+                    if($purchaseByDocumentResult[0]->tax_base == 0 && (int)$purchaseByDocumentResult[0]->nzok === 1){
+                        $purchaseByDocumentResult[0]->tax_base = (float) $purchaseByDocumentResult[0]->value_of_the_deal;
                     }
 
                     $purchaseByDocumentResult[0]->tax_base_amount = number_format($purchaseByDocumentResult[0]->tax_base, 2, '.', '');
