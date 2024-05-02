@@ -35,6 +35,11 @@ class Parser
                 $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'Windows-1251');
                 $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
             }
+
+            if(!$encoding){
+                $fileContent = mb_convert_encoding($fileContent, 'UTF-8', 'Windows-1251');
+                $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
+            }
         } else {
             $searchMetaTag = '<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">';
 
@@ -47,7 +52,6 @@ class Parser
             $fileContent = preg_replace($pattern, $replacement, $fileContent, 1);
             $fileContent = mb_convert_encoding($fileContent, 'Windows-1251', 'UTF-8');
         }
-
 
         $dom = new DOMDocument();
         @$dom->loadHTML($fileContent);
