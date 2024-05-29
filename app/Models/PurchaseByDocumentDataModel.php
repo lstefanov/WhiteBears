@@ -57,11 +57,14 @@ class PurchaseByDocumentDataModel extends Model
 
     public function getHistory(): array
     {
-        $this->select('purchase_by_document.*, providers.name as provider_name, businesses.name as business_name');
+        $this->select('purchase_by_document.id, purchase_by_document.invoice_number, purchase_by_document.invoice_date, purchase_by_document.payment_amount, purchase_by_document.items, purchase_by_document.entities, purchase_by_document.provider_id, purchase_by_document.created_at, providers.name as provider_name, businesses.name as business_name');
         $this->join('providers', 'providers.id = purchase_by_document.provider_id');
         $this->join('businesses', 'businesses.id = purchase_by_document.business_id');
-        //$this->where(...);
+        $this->limit(10000);
         $this->orderBy('purchase_by_document.created_at', 'desc');
-        return $this->findAll();
+        $query = $this->get();
+        return $query->getResultArray();
+
+        //echo $this->getLastQuery(); die();
     }
 }
