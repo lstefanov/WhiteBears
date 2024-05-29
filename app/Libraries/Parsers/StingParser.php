@@ -182,7 +182,7 @@ class StingParser
     private function validateInvoiceNumberForDuplication(string $invoiceNumber): bool
     {
         $vpjStingEntitiesModel = new VPJStingEntitiesModel();
-        $vpjStingEntity = $vpjStingEntitiesModel->where('doc_n', $invoiceNumber)->first();
+        $vpjStingEntity = $vpjStingEntitiesModel->where('doc_n', $invoiceNumber)->where('status', 'success')->first();
         if ($vpjStingEntity) {
             return false;
         }
