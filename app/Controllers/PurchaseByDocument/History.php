@@ -113,7 +113,7 @@ class History extends BaseController
     }
 
 
-    public function delete(int $pbdId): \CodeIgniter\HTTP\RedirectResponse
+    public function delete(int $pbdId)
     {
 
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
@@ -160,7 +160,11 @@ class History extends BaseController
 
         $purchaseByDocumentDataModel->delete($pbdId);
 
-        return redirect()->to('/purchase-by-document//history');
+        if(isset($_GET['ajax'])){
+            return $this->response->setJSON(['success' => true]);
+        } else {
+            return redirect()->to('/purchase-by-document//history');
+        }
     }
 
     public function download(int $pbdId)

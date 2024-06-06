@@ -101,6 +101,22 @@ class VatPurchaseJournalsExportView {
                 });
             }
         });
+
+        //event on dynamic build elements with data-action="delete" , on click
+        $(document).on('click', '[data-action="delete"]', function () {
+            let element = $(this);
+            let id = $(this).data('id');
+
+            if (confirm('Сигурни ли сте, че искате да изтриете записа?')) {
+                $.ajax({
+                    url: '/purchase-by-document/delete/' + id + '?ajax=1',
+                    method: 'GET',
+                    success: function (response) {
+                        element.closest('tr').remove();
+                    }
+                });
+            }
+        });
     }
 }
 

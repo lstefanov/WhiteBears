@@ -122,6 +122,11 @@
                                     <?php if((int) $row['status'] === 1 || (int) $row['status'] === 2 || (int) $row['status'] === 4 ){ ?>
                                         <br />
                                         <a href="<?= base_url('purchase-by-document/view/'.$row['purchase_by_document_data']['id']) ?>" target="_blank">Покупка по документ</a>
+
+                                        <?php if((int) $row['status'] === 2 ){ ?>
+                                            <br />
+                                            <a href="#" data-action="delete" class="btn btn-danger btn-sm" data-id="<?= $row['purchase_by_document_data']['id'] ?>">изтриване</a>
+                                        <?php } ?>
                                     <?php } ?>
                                 </td>
 
