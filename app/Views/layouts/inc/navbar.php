@@ -55,10 +55,16 @@
 
     <!-- Nav Item - Tables -->
     <li class="nav-item">
-        <a class="nav-link" href="#">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Разплащане по фактури</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseNomenclatures"
+           aria-expanded="true" aria-controls="collapseNomenclatures">
+            <i class="fas fa-fw fa-chart-area"></i>
+            <span>Номенклатури</span>
         </a>
+        <div id="collapseNomenclatures" class="collapse" aria-labelledby="collapseNomenclatures" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <a class="collapse-item" href="<?= base_url('nomenclatures/export-invoices-entities') ?>">Експортиране на лекарства</a>
+            </div>
+        </div>
     </li>
 
 

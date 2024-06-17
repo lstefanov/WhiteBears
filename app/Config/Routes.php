@@ -76,6 +76,9 @@ $routes->get('/reference/dds-vs-items-from-invoice', 'Reference\DdsVsItems::view
 $routes->get('/reference/comparison-of-tax-bases', 'Reference\ComparisonTaxBases::view/$1', ['filter' => 'authFilter']);
 
 
+$routes->get('/nomenclatures/export-invoices-entities', 'Nomenclatures\ExportInvoicesEntities::view', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/export-invoices-entities/export', 'Nomenclatures\ExportInvoicesEntities::export', ['filter' => 'authFilter']);
+
 
 
 
