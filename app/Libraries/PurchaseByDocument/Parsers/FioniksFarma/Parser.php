@@ -15,6 +15,8 @@ class Parser
 
     public function execute(string $fileContent)
     {
+        $fileContent = $this->clearContent($fileContent);
+
         //Check for Invoice Type
         $this->checkInvoiceType($fileContent);
 
@@ -113,4 +115,31 @@ class Parser
             $this->invoiceType = 2;
         }
     }
+
+    private function clearContent(string $fileContent)
+    {
+        // Split the content into an array of lines
+        $lines = explode(PHP_EOL, $fileContent);
+
+        // Find the index of the line containing the specified string
+        $specifiedString = "РЕДЛОЖЕНИЕ ЗА ЦЕНООБРАЗУВАНЕ";
+        $cutoffIndex = null;
+
+        foreach ($lines as $i => $line) {
+            if (strpos($line, $specifiedString) !== false) {
+                $cutoffIndex = $i;
+                break;
+            }
+        }
+
+        // If the specified string is found, slice the array up to the found index
+        if ($cutoffIndex !== null) {
+            $output = array_slice($lines, 0, $cutoffIndex);
+            return implode(PHP_EOL, $output);
+        }
+
+        // If the specified string is not found, return the original content
+        return $fileContent;
+    }
+
 }
