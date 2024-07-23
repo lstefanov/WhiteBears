@@ -85,6 +85,8 @@ $routes->get('/nomenclatures/export-invoices-entities/export', 'Nomenclatures\Ex
 
 $routes->get('/fixes/vat-purchase-journals/sting-export-date-full', 'Fixes\VatPurchaseJournals::stingExportDateFull/');
 $routes->get('/fixes/vat-purchase-journals/aster-export-date-full', 'Fixes\VatPurchaseJournals::asterExportDateFull/');
+$routes->get('/fixes/purchase-by-document-prices/export-to-files', 'Fixes\PurchaseByDocumentPrices::export_to_files/');
+$routes->get('/fixes/purchase-by-document-prices/delete-invalids', 'Fixes\PurchaseByDocumentPrices::delete_invalids/');
 
 
 $routes->get('/test/txt/parse', 'Test\txt::parse/');

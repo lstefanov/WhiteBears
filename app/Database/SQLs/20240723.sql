@@ -1,0 +1,1 @@
+ALTER TABLE `purchase_by_document` ADD INDEX `inv_number` (`invoice_number`);
