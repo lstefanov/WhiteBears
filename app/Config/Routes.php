@@ -79,6 +79,16 @@ $routes->get('/reference/comparison-of-tax-bases', 'Reference\ComparisonTaxBases
 $routes->get('/nomenclatures/export-invoices-entities', 'Nomenclatures\ExportInvoicesEntities::view', ['filter' => 'authFilter']);
 $routes->get('/nomenclatures/export-invoices-entities/export', 'Nomenclatures\ExportInvoicesEntities::export', ['filter' => 'authFilter']);
 
+$routes->get('/nomenclatures/synchronization', 'Nomenclatures\Synchronization::view', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/add-sync-file', 'Nomenclatures\Synchronization::add', ['filter' => 'authFilter']);
+$routes->post('/nomenclatures/add-sync-file-submit', 'Nomenclatures\Synchronization::submit', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/add-sync-file-finalize', 'Nomenclatures\Synchronization::submit_finalize', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/synchronization-delete/(:any)', 'Nomenclatures\Synchronization::delete/$1', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/synchronization-view-file/(:any)', 'Nomenclatures\Synchronization::view_file/$1', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/synchronization-download-file/(:any)', 'Nomenclatures\Synchronization::download_file/$1', ['filter' => 'authFilter']);
+
+$routes->get('/nomenclatures/reference', 'Nomenclatures\Reference::view', ['filter' => 'authFilter']);
+
 
 
 

@@ -14,3 +14,5 @@
 /writable/uploads/tmp/*
 !/writable/uploads/tmp/index.html
 
+
+writable/tmp/export_to_files.zip

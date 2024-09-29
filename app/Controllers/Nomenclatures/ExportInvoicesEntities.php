@@ -160,6 +160,10 @@ class ExportInvoicesEntities extends BaseController
         $provider2 = [];
         $provider3 = [];
 
+        $stingData = [];
+        $fioniksFarmaData = [];
+        $asterData = [];
+
         // Iterate over purchases and separate them based on provider_id
         foreach($purchases as $purchase) {
             switch($purchase['provider_id']) {
@@ -175,28 +179,32 @@ class ExportInvoicesEntities extends BaseController
             }
         }
 
-        //Sting
-        $pBDStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
-        $stingData = $pBDStingInvoiceItemsModel
-            ->distinct()
-            ->select('designation AS name')
-            ->whereIn('purchase_by_document_id', $provider1)
-            ->findAll();
+        if(!empty($provider1)){
+            $pBDStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
+            $stingData = $pBDStingInvoiceItemsModel
+                ->distinct()
+                ->select('designation AS name')
+                ->whereIn('purchase_by_document_id', $provider1)
+                ->findAll();
+        }
 
-        $pBDFioniksFarmaInvoiceItemsModel = new PBDFioniksFarmaInvoiceItemsModel();
-        $fioniksFarmaData = $pBDFioniksFarmaInvoiceItemsModel
-            ->distinct()
-            ->select('designation AS name')
-            ->whereIn('purchase_by_document_id', $provider2)
-            ->findAll();
+        if(!empty($provider2)){
+            $pBDFioniksFarmaInvoiceItemsModel = new PBDFioniksFarmaInvoiceItemsModel();
+            $fioniksFarmaData = $pBDFioniksFarmaInvoiceItemsModel
+                ->distinct()
+                ->select('designation AS name')
+                ->whereIn('purchase_by_document_id', $provider2)
+                ->findAll();
+        }
 
-        $pBDAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
-        $asterData = $pBDAsterInvoiceItemsModel
-            ->distinct()
-            ->select('product_name AS name')
-            ->whereIn('purchase_by_document_id', $provider3)
-            ->findAll();
-
+        if(!empty($provider3)){
+            $pBDAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
+            $asterData = $pBDAsterInvoiceItemsModel
+                ->distinct()
+                ->select('product_name AS name')
+                ->whereIn('purchase_by_document_id', $provider3)
+                ->findAll();
+        }
 
         // Merge all three arrays
         $mergedArray = array_merge($stingData, $fioniksFarmaData, $asterData);

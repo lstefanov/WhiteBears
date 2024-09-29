@@ -63,6 +63,8 @@
         <div id="collapseNomenclatures" class="collapse" aria-labelledby="collapseNomenclatures" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="<?= base_url('nomenclatures/export-invoices-entities') ?>">Експортиране на лекарства</a>
+                <a class="collapse-item" href="<?= base_url('nomenclatures/synchronization') ?>">Синхронизация на номенклатури</a>
+                <a class="collapse-item" href="<?= base_url('nomenclatures/reference') ?>">Справка за закупена стока</a>
             </div>
         </div>
     </li>

@@ -51,6 +51,14 @@ class Companies extends BaseController
             'name' => $this->request->getPost('name'),
             'alias_1' => $this->request->getPost('alias_1'),
             'alias_2' => $this->request->getPost('alias_2'),
+            'alias_3' => $this->request->getPost('alias_3'),
+            'alias_4' => $this->request->getPost('alias_4'),
+            'alias_5' => $this->request->getPost('alias_5'),
+            'alias_6' => $this->request->getPost('alias_6'),
+            'alias_7' => $this->request->getPost('alias_7'),
+            'alias_8' => $this->request->getPost('alias_8'),
+            'alias_9' => $this->request->getPost('alias_9'),
+            'alias_10' => $this->request->getPost('alias_10'),
             'client_number' => $this->request->getPost('client_number')
         ];
 

@@ -55,6 +55,46 @@
                     <input type="text" name="alias_2" class="form-control" id="alias_2" value="<?= old('alias_2', $company['alias_2'] ?? '' ) ?>" />
                 </div>
 
+                <div class="mb-4">
+                    <label for="alias_3" class="form-label h6">Алиас 3:</label>
+                    <input type="text" name="alias_3" class="form-control" id="alias_3" value="<?= old('alias_3', $company['alias_3'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_4" class="form-label h6">Алиас 4:</label>
+                    <input type="text" name="alias_4" class="form-control" id="alias_4" value="<?= old('alias_4', $company['alias_4'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_5" class="form-label h6">Алиас 5:</label>
+                    <input type="text" name="alias_5" class="form-control" id="alias_5" value="<?= old('alias_5', $company['alias_5'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_6" class="form-label h6">Алиас 6:</label>
+                    <input type="text" name="alias_6" class="form-control" id="alias_6" value="<?= old('alias_6', $company['alias_6'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_7" class="form-label h6">Алиас 7:</label>
+                    <input type="text" name="alias_7" class="form-control" id="alias_7" value="<?= old('alias_7', $company['alias_7'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_8" class="form-label h6">Алиас 8:</label>
+                    <input type="text" name="alias_8" class="form-control" id="alias_8" value="<?= old('alias_8', $company['alias_8'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_9" class="form-label h6">Алиас 9:</label>
+                    <input type="text" name="alias_9" class="form-control" id="alias_9" value="<?= old('alias_9', $company['alias_9'] ?? '' ) ?>" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="alias_10" class="form-label h6">Алиас 10:</label>
+                    <input type="text" name="alias_10" class="form-control" id="alias_10" value="<?= old('alias_10', $company['alias_10'] ?? '' ) ?>" />
+                </div>
+
                 <hr style="opacity: 1" />
 
                 <div class="mb-4">

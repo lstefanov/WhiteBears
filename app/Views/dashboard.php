@@ -69,8 +69,22 @@
                 </div>
                 <div class="card-body">
                     <a href="<?= base_url('nomenclatures/export-invoices-entities') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
-                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-download"></i></span>
                         <span class="text">Експортиране на лекарства</span>
+                    </a>
+
+                    <br /><br />
+
+                    <a href="<?= base_url('nomenclatures/synchronization') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-sync"></i></span>
+                        <span class="text">Синхронизация на номенклатури</span>
+                    </a>
+
+                    <br /><br />
+
+                    <a href="<?= base_url('nomenclatures/reference') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
+                        <span class="text">Справка за закупена стока</span>
                     </a>
                 </div>
             </div>
