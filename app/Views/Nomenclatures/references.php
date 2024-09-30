@@ -54,6 +54,10 @@
             <div style="clear: both; margin-top: 10px; overflow: hidden;">
                 <span style="float: left; padding-right: 10px; padding-top: 2px;  width: 130px;">&nbsp;</span>
                 <button type="button" class="btn btn-success" style="float: left; padding: 4px 10px; font-size: 14px;" id="view-btn">Преглед</button>
+                <?php if($selectedBusinessId !== 0){ ?>
+                    <button type="button" class="btn btn-primary" style="float: left; padding: 4px 10px; font-size: 14px; margin-left: 10px;" id="export-references-btn">Експортиране</button>
+                    <button type="button" class="btn btn-danger" style="float: left; padding: 4px 10px; font-size: 14px; margin-left: 10px;" id="export-invalid-references-btn">Експортиране на грешните</button>
+                <?php } ?>
             </div>
 
         </div>
@@ -64,7 +68,7 @@
                 </div>
             <?php }else{ ?>
                 <div class="table-responsive">
-                    <table class="table table-bordered dataTable data-table-export" width="100%" cellspacing="0">
+                    <table class="table table-bordered dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
                             <th>Група</th>
@@ -73,11 +77,79 @@
                             <th>Брой</th>
                             <th>Обща цена</th>
                             <th>Средна цена</th>
+                            <th>Фактури</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($data as $row){ ?>
+                            <?php foreach ($data['elements'] as $row){ ?>
+                                <tr>
+                                    <td><?= $row['code_name'] ?></td>
+                                    <td><?= $row['code_number'] ?? '-' ?></td>
+                                    <td><?= $row['name'] ?></td>
+                                    <td><?= $row['quantity'] ?></td>
+                                    <td><?= number_format($row['price'], 2, '.', '') ?></td>
+                                    <td>
+                                        <?php
+                                            $averagePrice = intval($row['quantity']) !== 0 ? doubleval($row['price']) / intval($row['quantity']) : 0;
+                                            echo number_format($averagePrice, 2, '.', '');
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                            $elements = [];
+                                            foreach($row['invoices'] as $invoice){
+                                                $elements[] = "<a href='".base_url("purchase-by-document/view/{$invoice['id']}")."' target='_blank'>{$invoice['number']}</a>";
+                                            }
+                                            echo implode(', ', $elements);
+                                        ?>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
 
+
+                <div class="table-responsive">
+                    <br /><br />
+                    <h4>Липсващи стоки</h4>
+
+                    <table class="table table-bordered dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>Група</th>
+                            <th>Код</th>
+                            <th>Наименование</th>
+                            <th>Брой</th>
+                            <th>Обща цена</th>
+                            <th>Средна цена</th>
+                            <th>Фактури</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($data['missing'] as $row){ ?>
+                            <tr>
+                                <td style="background-color: red;"><?= $row['code_name'] ?? '-' ?></td>
+                                <td style="background-color: red;"><?= $row['code_number'] ?? '-' ?></td>
+                                <td><?= $row['name'] ?></td>
+                                <td><?= $row['quantity'] ?></td>
+                                <td><?= number_format($row['price'], 2, '.', '') ?></td>
+                                <td>
+                                    <?php
+                                    $averagePrice = intval($row['quantity']) !== 0 ? doubleval($row['price']) / intval($row['quantity']) : 0;
+                                    echo number_format($averagePrice, 2, '.', '');
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php
+                                    $elements = [];
+                                    foreach($row['invoices'] as $invoice){
+                                        $elements[] = "<a href='".base_url("purchase-by-document/view/{$invoice['id']}")."'>{$invoice['number']}</a>";
+                                    }
+                                    echo implode(', ', $elements);
+                                    ?>
+                                </td>
+                            </tr>
                         <?php } ?>
                         </tbody>
                     </table>
@@ -85,7 +157,5 @@
             <?php } ?>
         </div>
     </div>
-
-
 
 <?=$this->endSection()?>

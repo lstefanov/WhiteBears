@@ -88,6 +88,8 @@ $routes->get('/nomenclatures/synchronization-view-file/(:any)', 'Nomenclatures\S
 $routes->get('/nomenclatures/synchronization-download-file/(:any)', 'Nomenclatures\Synchronization::download_file/$1', ['filter' => 'authFilter']);
 
 $routes->get('/nomenclatures/reference', 'Nomenclatures\Reference::view', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/reference-export', 'Nomenclatures\Reference::export', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/reference-export-invalid', 'Nomenclatures\Reference::export_invalid', ['filter' => 'authFilter']);
 
 
 

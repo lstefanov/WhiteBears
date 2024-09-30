@@ -10,6 +10,11 @@ class Reference {
 
         //get url params
         let urlParams = new URLSearchParams(window.location.search);
+        let providerId = urlParams.get('provider_id');
+        if (providerId) {
+            $('#provider-id').val(providerId).trigger('change');
+        }
+
         let businessId = urlParams.get('business_id');
         if (businessId) {
             $('#business-id').val(businessId).trigger('change');
@@ -82,10 +87,64 @@ class Reference {
             window.location.href = `/nomenclatures/reference/${urlParams}`;
         });
 
+        $('#export-references-btn').on('click', function () {
+            let providerId = $('#provider-id').val();
+            let businessId = $('#business-id').val();
+            let companyId = $('#company-id').val();
+            let dateFrom = $('#date-from').val();
+            let dateTo = $('#date-to').val();
+
+            if (!providerId || parseInt(providerId) === 0) {
+                alert('Моля, изберете доставчик!');
+                return;
+            }
+
+            if (!businessId || parseInt(businessId) === 0) {
+                alert('Моля, изберете фирма!');
+                return;
+            }
+
+            if (!companyId || parseInt(companyId) === 0) {
+                alert('Моля, изберете обект!');
+                return;
+            }
+
+            let urlParams = `?provider_id=${providerId}&business_id=${businessId}&company_id=${companyId}&date_from=${dateFrom}&date_to=${dateTo}`;
+
+            window.open(`/nomenclatures/reference-export/${urlParams}`, '_blank');
+        });
+
+        $('#export-invalid-references-btn').on('click', function () {
+            let providerId = $('#provider-id').val();
+            let businessId = $('#business-id').val();
+            let companyId = $('#company-id').val();
+            let dateFrom = $('#date-from').val();
+            let dateTo = $('#date-to').val();
+
+            if (!providerId || parseInt(providerId) === 0) {
+                alert('Моля, изберете доставчик!');
+                return;
+            }
+
+            if (!businessId || parseInt(businessId) === 0) {
+                alert('Моля, изберете фирма!');
+                return;
+            }
+
+            if (!companyId || parseInt(companyId) === 0) {
+                alert('Моля, изберете обект!');
+                return;
+            }
+
+            let urlParams = `?provider_id=${providerId}&business_id=${businessId}&company_id=${companyId}&date_from=${dateFrom}&date_to=${dateTo}`;
+
+            window.open(`/nomenclatures/reference-export-invalid/${urlParams}`, '_blank');
+        });
+
 
         $('#provider-id').on('change', function () {
             let providerId = $(this).val();
-
+            console.log(typeof providerId, providerId);
             if (providerId === '0') {
                 $('#business-id').val('0').attr('disabled', true);
             } else {
