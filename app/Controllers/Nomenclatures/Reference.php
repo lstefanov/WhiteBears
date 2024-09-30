@@ -57,8 +57,6 @@ class Reference extends BaseController
 
         $data = $this->generateData($selectedProviderId, $selectedBusinessId, $selectedCompanyId, $dateFrom, $dateTo);
 
-        //print_r2($data, 1);
-
         $this->viewData['dateFrom'] = $dateFrom;
         $this->viewData['dateTo'] = $dateTo;
         $this->viewData['selectedBusinessId'] = $selectedBusinessId;
@@ -127,7 +125,7 @@ class Reference extends BaseController
             $averagePrice = intval($item['quantity']) !== 0 ? doubleval($item['price']) / intval($item['quantity']) : 0;
 
             $invoicesElements = [];
-            foreach($item['invoices'] as $invoice){
+            foreach ($item['invoices'] as $invoice) {
                 $invoicesElements[] = $invoice['number'];
             }
             $invoices = implode(', ', $invoicesElements);
@@ -184,7 +182,7 @@ class Reference extends BaseController
             $averagePrice = intval($item['quantity']) !== 0 ? doubleval($item['price']) / intval($item['quantity']) : 0;
 
             $invoicesElements = [];
-            foreach($item['invoices'] as $invoice){
+            foreach ($item['invoices'] as $invoice) {
                 $invoicesElements[] = $invoice['number'];
             }
             $invoices = implode(', ', $invoicesElements);
@@ -245,7 +243,7 @@ class Reference extends BaseController
 
 
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
-        $invoices = $purchaseByDocumentDataModel->select('id',)
+        $invoices = $purchaseByDocumentDataModel->select('id')
             ->where('provider_id', $selectedProviderId)
             ->where('business_id', $selectedBusinessId)
             ->where('invoice_date >=', $dateFrom)
@@ -254,7 +252,7 @@ class Reference extends BaseController
 
         $invoiceIds = array_column($invoices, 'id');
 
-        if(empty($invoiceIds)){
+        if (empty($invoiceIds)) {
             return [
                 'elements' => [],
                 'missing' => []
@@ -338,7 +336,7 @@ class Reference extends BaseController
             $invoiceDetails = $purchaseByDocumentDataModel->select('invoice_number')
                 ->where('id', $item['invoice_id'])
                 ->first();
-            $invoice  = [
+            $invoice = [
                 'id' => $item['invoice_id'],
                 'number' => $invoiceDetails['invoice_number']
             ];
@@ -413,9 +411,10 @@ class Reference extends BaseController
             $foundedCodes = $nomenclaturesEntityMap[mb_strtolower($row['code_name'])] ?? [];
 
             foreach ($foundedCodes as $foundedCode) {
-                $rowPrice = intval($row['quantity']) !== 0 ? doubleval($row['price']) / intval($row['quantity']) : 0;
-                $codePriceFrom = doubleval($foundedCode['price_from']);
-                $codePriceTo = doubleval($foundedCode['price_to']);
+                $rowPrice = intval($row['quantity']) !== 0 ? doubleval($row['price']) / intval($row['quantity']) : 0.00;
+                $rowPrice = round($rowPrice, 2);
+                $codePriceFrom = round(doubleval($foundedCode['price_from']), 2);
+                $codePriceTo = round(doubleval($foundedCode['price_to']), 2);
 
                 if ($rowPrice >= $codePriceFrom && $rowPrice <= $codePriceTo) {
                     $finalData['elements'][$key]['code_number'] = $foundedCode['code_number'];
@@ -423,8 +422,6 @@ class Reference extends BaseController
                 }
             }
         }
-
-        //print_r2($finalData, 1);
 
         return $finalData;
     }
