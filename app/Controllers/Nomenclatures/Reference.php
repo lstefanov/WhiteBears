@@ -363,6 +363,13 @@ class Reference extends BaseController
             return mb_strtolower($item['name']);
         }, $groupedFilteredItems);
 
+        if(empty($names)){
+            return [
+                'elements' => [],
+                'missing' => []
+            ];
+        }
+
         $nomenclaturesSyncEntitiesModel = new \App\Models\NomenclaturesSyncEntitiesModel();
         $nomenclaturesSyncEntities = $nomenclaturesSyncEntitiesModel
             ->whereIn('LOWER(name)', $names)
