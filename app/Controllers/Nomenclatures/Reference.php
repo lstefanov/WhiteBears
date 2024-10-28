@@ -221,7 +221,7 @@ class Reference extends BaseController
     ): array {
         $data = [];
 
-        if ($selectedProviderId === 0 || $selectedBusinessId === 0 || $selectedCompaniesId === 0) {
+        if ($selectedProviderId === 0 || $selectedBusinessId === 0) {
             return $data;
         }
 
@@ -230,8 +230,25 @@ class Reference extends BaseController
         $companies = $companiesModel->orderBy('name', 'ASC')->findAll();
 
         $selectedCompanyNames = [];
-        foreach ($companies as $company) {
-            if ($company['id'] == $selectedCompaniesId) {
+
+        if($selectedCompaniesId !== 0){
+            foreach ($companies as $company) {
+                if ($company['id'] == $selectedCompaniesId) {
+                    $selectedCompanyNames[] = mb_strtolower($company['name']);
+                    for ($i = 1; $i <= 10; $i++) {
+                        if (!empty($company['alias_' . $i])) {
+                            $selectedCompanyNames[] = mb_strtolower($company['alias_' . $i]);
+                        }
+                    }
+                }
+            }
+        } else {{
+            //Get all companies based on Business ID
+            $businessCompaniesModel = new \App\Models\BusinessesCompaniesModel();
+            $companiesIds = $businessCompaniesModel->where('business_id', $selectedBusinessId)->findAll();
+
+            foreach ($companiesIds as $company) {
+                $company = $companiesModel->where('id', $company['company_id'])->first();
                 $selectedCompanyNames[] = mb_strtolower($company['name']);
                 for ($i = 1; $i <= 10; $i++) {
                     if (!empty($company['alias_' . $i])) {
@@ -239,7 +256,7 @@ class Reference extends BaseController
                     }
                 }
             }
-        }
+        }}
 
 
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();

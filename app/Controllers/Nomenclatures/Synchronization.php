@@ -151,4 +151,24 @@ class Synchronization extends BaseController
         $writer->save('php://output');
         exit(); // Make sure the script stops after sending the file
     }
+
+    public function addMissingElement(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        //Get last element
+        $nomenclaturesSyncModel = new NomenclaturesSyncModel();
+        $lastElement = $nomenclaturesSyncModel->orderBy('id', 'DESC')->first();
+
+        $groupName = $this->request->getPost('group_name');
+        $elementName = $this->request->getPost('element_name');
+
+        $nomenclaturesSyncEntitiesModel = new NomenclaturesSyncEntitiesModel();
+        $nomenclaturesSyncEntitiesModel->insert([
+            'nomenclatures_sync_id' => $lastElement['id'],
+            'code_name' => $groupName,
+            'name' => $elementName
+        ]);
+
+        //Return ajax response
+        return $this->response->setJSON(['status' => 'success']);
+    }
 }

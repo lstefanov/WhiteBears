@@ -118,7 +118,6 @@
                         <thead>
                         <tr>
                             <th>Група</th>
-                            <th>Код</th>
                             <th>Наименование</th>
                             <th>Брой</th>
                             <th>Обща цена</th>
@@ -129,8 +128,10 @@
                         <tbody>
                         <?php foreach ($data['missing'] as $row){ ?>
                             <tr>
-                                <td style="background-color: red;"><?= $row['code_name'] ?? '-' ?></td>
-                                <td style="background-color: red;"><?= $row['code_number'] ?? '-' ?></td>
+                                <td style="background-color: rgba(255,0,0, 0.1);">
+                                    <button type="button"
+                                            class="btn btn-danger add-missing-element" style="padding: 0px 5px; font-size: 12px;" data-toggle="modal" data-target="#missing-modal" data-name="<?= addslashes($row['name']) ?>">Добави</button>
+                                </td>
                                 <td><?= $row['name'] ?></td>
                                 <td><?= $row['quantity'] ?></td>
                                 <td><?= number_format($row['price'], 2, '.', '') ?></td>
@@ -155,6 +156,34 @@
                     </table>
                 </div>
             <?php } ?>
+        </div>
+    </div>
+
+    <div class="modal fade" id="missing-modal" tabindex="-1" role="dialog" aria-labelledby="missing-modal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="missing-modal-title">Добавяне на липсваща стока</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="form-group">
+                        <label for="missing-group" id="missing-element-modal-name">Група</label>
+                        <select name="missing-group" id="missing-group" class="form-select">
+                            <option value="">- изберете група -</option>
+                            <option value="A">A (ЛЕКАРСТВЕНИ СР-ВА)</option>
+                            <option value="B">B (АНАЛГЕТИЦИ)</option>
+                            <option value="C">C (САНИТАРИЯ)</option>
+                            <option value="D">D (КОЗМЕТИКА)</option>
+                        </select>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="button" class="btn btn-success" id="add-missing-btn">Добави</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

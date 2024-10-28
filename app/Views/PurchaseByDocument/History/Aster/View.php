@@ -79,7 +79,10 @@
                                 <?php foreach($data['invoice_items'] as $item){ ?>
                                     <tr>
                                         <td><?= $item['product_code'] ?></td>
-                                        <td><?= $item['product_name'] ?></td>
+                                        <td class="editable">
+                                            <span data-item-id="<?= $item['id'] ?>" data-type="name"><?= $item['product_name'] ?></span>
+                                            <span class="edit-icon" data-provider-id="3" data-item-id="<?= $item['id'] ?>" data-item-name="<?= addslashes($item['product_name']) ?>"><i class="fas fa-edit"></i></span>
+                                        </td>
                                         <td><?= $item['pharmacy_code'] ?></td>
                                         <td><?= $item['quantity'] ?></td>
                                         <td><?= $item['totalValue'] ?></td>
@@ -97,5 +100,6 @@
         </div>
     </div>
 
+<?php include( ROOTPATH . 'app/Views/PurchaseByDocument/History/EditItemModal.php'); ?>
 
 <?=$this->endSection()?>

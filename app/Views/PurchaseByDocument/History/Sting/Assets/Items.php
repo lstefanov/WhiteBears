@@ -2,7 +2,6 @@
     <thead>
     <tr>
         <th class="text-right">&nbsp;</th>
-
         <th>Лекарствено средство</th>
         <th>Оп</th>
         <th class="text-right">Серия</th>
@@ -27,9 +26,12 @@
     </thead>
     <tbody>
     <?php foreach ($data['invoice_items'] as $itemKey => $item){ ?>
-        <tr>
+        <tr data-item-id="<?= $item['id'] ?>">
             <td class="text-right"><?= $item['number'] ?></td>
-            <td><?= $item['designation'] ?></td>
+            <td class="editable">
+                <span data-item-id="<?= $item['id'] ?>" data-type="name"><?= $item['designation'] ?></span>
+                <span class="edit-icon" data-provider-id="1" data-item-id="<?= $item['id'] ?>" data-item-name="<?= addslashes($item['designation']) ?>"><i class="fas fa-edit"></i></span>
+            </td>
             <td><?= $item['manufacturer'] ?></td>
             <td><?= $item['batch'] ?></td>
             <td class="text-right"><?= $item['quantity'] ?></td>

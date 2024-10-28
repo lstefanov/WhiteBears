@@ -69,6 +69,8 @@ $routes->get('/purchase-by-document/delete/(:any)', 'PurchaseByDocument\History:
 $routes->get('/purchase-by-document/download/(:any)', 'PurchaseByDocument\History::download/$1', ['filter' => 'authFilter']);
 $routes->get('/purchase-by-document/view/(:any)', 'PurchaseByDocument\History::view/$1', ['filter' => 'authFilter']);
 
+$routes->post('/purchase-by-document/rename-element', 'PurchaseByDocument\History::renameName', ['filter' => 'authFilter']);
+
 
 
 
@@ -90,6 +92,8 @@ $routes->get('/nomenclatures/synchronization-download-file/(:any)', 'Nomenclatur
 $routes->get('/nomenclatures/reference', 'Nomenclatures\Reference::view', ['filter' => 'authFilter']);
 $routes->get('/nomenclatures/reference-export', 'Nomenclatures\Reference::export', ['filter' => 'authFilter']);
 $routes->get('/nomenclatures/reference-export-invalid', 'Nomenclatures\Reference::export_invalid', ['filter' => 'authFilter']);
+
+$routes->post('/nomenclatures/add-missing-element', 'Nomenclatures\Synchronization::addMissingElement', ['filter' => 'authFilter']);
 
 
 

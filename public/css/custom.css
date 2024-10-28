@@ -34,3 +34,24 @@ table.purchase-by-document-sub-table td{
     width: 50%;
     padding: 6px;
 }
+
+
+.edit-icon {
+    display: none;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.editable:hover .edit-icon {
+    display: inline-block;
+    color: #0f6848;
+}
+
+#editModal, #missing-modal{
+    color: #000;
+}
+
+#editModal input, #missing-modal input{
+    color: #000;
+}
+

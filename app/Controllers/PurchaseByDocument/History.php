@@ -195,4 +195,28 @@ class History extends BaseController
         echo $fileContent;
         exit();
     }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function renameName(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $itemId = $this->request->getPost('item_id');
+        $itemName = $this->request->getPost('item_name');
+        $providerId = (int) $this->request->getPost('provider_id');
+
+        if($providerId === 1){
+            $pbdStingInvoiceItemsModel = new PBDStingInvoiceItemsModel();
+            $pbdStingInvoiceItemsModel->update($itemId, ['designation' => $itemName]);
+        } elseif($providerId === 2){
+            $pbdFioniksFarmaInvoiceItemsModel = new PBDFioniksFarmaInvoiceItemsModel();
+            $pbdFioniksFarmaInvoiceItemsModel->update($itemId, ['designation' => $itemName]);
+        } elseif($providerId === 3){
+            $pbdAsterInvoiceItemsModel = new PBDAsterInvoiceItemsModel();
+            $pbdAsterInvoiceItemsModel->update($itemId, ['product_name' => $itemName]);
+        }
+
+        //Return ajax response
+        return $this->response->setJSON(['status' => 'success']);
+    }
 }

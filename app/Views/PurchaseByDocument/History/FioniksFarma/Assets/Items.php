@@ -29,8 +29,10 @@
             <?php if((int) $data['data']['nzok'] === 1){ ?>
                 <td><?= $item['code'] ?></td>
             <?php } ?>
-            <td>
-                <?= $item['designation'] ?>
+            <td class="editable">
+                <span data-item-id="<?= $item['id'] ?>" data-type="name"><?= $item['designation'] ?></span>
+                <span class="edit-icon" data-provider-id="2" data-item-id="<?= $item['id'] ?>" data-item-name="<?= addslashes($item['designation']) ?>"><i class="fas fa-edit"></i></span>
+
                 <?= !empty($item['inn']) ? "<br /><small>{$item['inn']}</small>" : '' ?>
             </td>
             <td><?= $item['manufacturer'] ?></td>

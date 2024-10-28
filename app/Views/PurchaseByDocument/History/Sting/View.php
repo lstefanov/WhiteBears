@@ -206,5 +206,6 @@
         </div>
     </div>
 
+<?php include( ROOTPATH . 'app/Views/PurchaseByDocument/History/EditItemModal.php'); ?>
 
 <?=$this->endSection()?>
