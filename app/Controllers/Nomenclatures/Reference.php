@@ -419,9 +419,12 @@ class Reference extends BaseController
             $name = mb_strtolower($groupedFilteredItem['name']);
             if (isset($nomenclatureSyncEntityMap[$name])) {
                 $nomenclatureSyncEntity = $nomenclatureSyncEntityMap[$name];
+
+                $uniqueInvoices = array_unique($groupedFilteredItem['invoices'], SORT_REGULAR);
+
                 $finalData['elements'][] = [
                     'name' => $groupedFilteredItem['name'],
-                    'invoices' => $groupedFilteredItem['invoices'],
+                    'invoices' => $uniqueInvoices,
                     'quantity' => $groupedFilteredItem['quantity'],
                     'price' => $groupedFilteredItem['price'],
                     'single_item_price' => $groupedFilteredItem['single_item_price'],
@@ -458,7 +461,7 @@ class Reference extends BaseController
                 }
             }
         }
-
+        
         return $finalData;
     }
 
