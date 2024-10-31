@@ -260,14 +260,26 @@ class Reference extends BaseController
 
 
         $purchaseByDocumentDataModel = new PurchaseByDocumentDataModel();
-        $invoices = $purchaseByDocumentDataModel->select('id')
+        $invoices = $purchaseByDocumentDataModel->select('id, invoice_number')
             ->where('provider_id', $selectedProviderId)
             ->where('business_id', $selectedBusinessId)
             ->where('invoice_date >=', $dateFrom)
             ->where('invoice_date <=', $dateTo)
             ->findAll();
 
-        $invoiceIds = array_column($invoices, 'id');
+        // Initialize an empty array to store unique invoice IDs.
+        $uniqueInvoices = [];
+
+        // Loop through the original array.
+        foreach ($invoices as $invoice) {
+            // Use invoice_number as the key, this ensures only the first occurrence is kept.
+            $uniqueInvoices[$invoice['invoice_number']] = $invoice['id'];
+        }
+
+        // Get only the unique IDs.
+        $invoiceIds = array_values($uniqueInvoices);
+
+        //$invoiceIds = array_column($invoices, 'id');
 
         if (empty($invoiceIds)) {
             return [
