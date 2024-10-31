@@ -109,6 +109,31 @@
                     </table>
                 </div>
 
+                <?php if($selectedProviderId === 1){ ?>
+                    <div class="table-responsive">
+                        <br /><br />
+                        <h4>Отстъпки по фактури</h4>
+
+                        <table class="table table-bordered dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Отстъпка</th>
+                                <th>Фактура</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach ($data['discounts'] as $row){ ?>
+                                <tr>
+                                    <td><?= number_format($row['discount'], 2, '.', '') ?></td>
+                                    <td>
+                                        <a href="<?= base_url("purchase-by-document/view/{$row['id']}") ?>" target="_blank"><?= $row['number'] ?></a>
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php } ?>
 
                 <div class="table-responsive">
                     <br /><br />

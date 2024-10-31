@@ -27,6 +27,7 @@ use Config\Services;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
 class Reference extends BaseController
@@ -138,6 +139,39 @@ class Reference extends BaseController
             $sheet->setCellValue('F' . $counter, number_format($averagePrice, 2, '.', ''));
             $sheet->setCellValue('G' . $counter, $invoices);
             $counter++;
+        }
+
+        // Add discount to the end of the file
+        if($selectedProviderId === 1) {
+            // Define yellow fill style
+            $yellowFill = [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => 'f5db47'],
+            ];
+
+            // Add 3 empty rows
+            for ($i = 0; $i < 3; $i++) {
+                $sheet->setCellValue('A' . $counter, '');
+                $counter++;
+            }
+
+            // Add header for the discount section
+            $sheet->setCellValue('A' . $counter, 'Отстъпки');
+            $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
+            $counter++;
+
+            // Add discount headers
+            $sheet->setCellValue('A' . $counter, 'Фактура');
+            $sheet->setCellValue('B' . $counter, 'Отстъпка');
+            $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
+            $counter++;
+
+            foreach ($data['discounts'] as $discount) {
+                $sheet->setCellValue('A' . $counter, $discount['number']);
+                $sheet->setCellValue('B' . $counter, number_format($discount['discount'], 2, '.', ''));
+                $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
+                $counter++;
+            }
         }
 
         // Align column G to left
@@ -284,7 +318,8 @@ class Reference extends BaseController
         if (empty($invoiceIds)) {
             return [
                 'elements' => [],
-                'missing' => []
+                'missing' => [],
+                'discounts' => []
             ];
         }
 
@@ -395,7 +430,8 @@ class Reference extends BaseController
         if(empty($names)){
             return [
                 'elements' => [],
-                'missing' => []
+                'missing' => [],
+                'discounts' => []
             ];
         }
 
@@ -412,7 +448,8 @@ class Reference extends BaseController
 
         $finalData = [
             'elements' => [],
-            'missing' => []
+            'missing' => [],
+            'discounts' => []
         ];
 
         foreach ($groupedFilteredItems as $groupedFilteredItem) {
@@ -461,7 +498,35 @@ class Reference extends BaseController
                 }
             }
         }
-        
+
+        //Search for discounts
+        $uniqueInvoicesForDiscounts = [];
+        if ($selectedProviderId === 1) {
+            foreach ($finalData['elements'] as $element) {
+                foreach ($element['invoices'] as $invoice) {
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['id'] = $invoice['id'];
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['number'] = $invoice['number'];
+                }
+            }
+
+            //For all invoices ids get them from pbd_sting_invoice_price
+            $pBDStingInvoicePriceModel = new \App\Models\PBDStingInvoicePriceModel();
+            $discounts = $pBDStingInvoicePriceModel->select('purchase_by_document_id, trade_discount')
+                ->whereIn('purchase_by_document_id', array_column($uniqueInvoicesForDiscounts, 'id'))
+                ->findAll();
+
+            foreach ($discounts as $discount) {
+                $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']]['discount'] = $discount['trade_discount'];
+            }
+
+            //From $uniqueInvoicesForDiscounts remove all elements that discount is < 0
+            $uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
+                return $invoice['discount'] > 0;
+            });
+
+            $finalData['discounts'] = $uniqueInvoicesForDiscounts;
+        }
+
         return $finalData;
     }
 
