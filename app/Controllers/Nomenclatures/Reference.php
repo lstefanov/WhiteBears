@@ -142,7 +142,7 @@ class Reference extends BaseController
         }
 
         // Add discount to the end of the file
-        if($selectedProviderId === 1) {
+        if(in_array($selectedProviderId, [1, 2])) {
             // Define yellow fill style
             $yellowFill = [
                 'fillType' => Fill::FILL_SOLID,
@@ -512,6 +512,30 @@ class Reference extends BaseController
             //For all invoices ids get them from pbd_sting_invoice_price
             $pBDStingInvoicePriceModel = new \App\Models\PBDStingInvoicePriceModel();
             $discounts = $pBDStingInvoicePriceModel->select('purchase_by_document_id, trade_discount')
+                ->whereIn('purchase_by_document_id', array_column($uniqueInvoicesForDiscounts, 'id'))
+                ->findAll();
+
+            foreach ($discounts as $discount) {
+                $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']]['discount'] = $discount['trade_discount'];
+            }
+
+            //From $uniqueInvoicesForDiscounts remove all elements that discount is < 0
+            $uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
+                return $invoice['discount'] > 0;
+            });
+
+            $finalData['discounts'] = $uniqueInvoicesForDiscounts;
+        } elseif ($selectedProviderId === 2) {
+            foreach ($finalData['elements'] as $element) {
+                foreach ($element['invoices'] as $invoice) {
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['id'] = $invoice['id'];
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['number'] = $invoice['number'];
+                }
+            }
+
+            //For all invoices ids get them from pbd_sting_invoice_price
+            $pBDFioniksFarmaInvoicePriceModel = new \App\Models\PBDFioniksFarmaInvoicePriceModel();
+            $discounts = $pBDFioniksFarmaInvoicePriceModel->select('purchase_by_document_id, trade_discount')
                 ->whereIn('purchase_by_document_id', array_column($uniqueInvoicesForDiscounts, 'id'))
                 ->findAll();
 

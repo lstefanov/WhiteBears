@@ -109,7 +109,7 @@
                     </table>
                 </div>
 
-                <?php if($selectedProviderId === 1){ ?>
+                <?php if(in_array($selectedProviderId, [1,2])){ ?>
                     <div class="table-responsive">
                         <br /><br />
                         <h4>Отстъпки по фактури</h4>
