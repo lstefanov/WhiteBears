@@ -131,6 +131,10 @@ class Reference extends BaseController
             }
             $invoices = implode(', ', $invoicesElements);
 
+            if(!isset($item['code_number'])){
+                $item['code_number'] = '-';
+            }
+
             $sheet->setCellValue('A' . $counter, $item['code_name']);
             $sheet->setCellValue('B' . $counter, $item['code_number']);
             $sheet->setCellValue('C' . $counter, $item['name']);
@@ -484,13 +488,17 @@ class Reference extends BaseController
 
         // Match the finalData elements to the correct nomenclaturesEntities based on code_name and price range
         foreach ($finalData['elements'] as $key => $row) {
-            $foundedCodes = $nomenclaturesEntityMap[mb_strtolower($row['code_name'])] ?? [];
+            $codeName = mb_strtolower($row['code_name']);
+            $tokensToReplace = ['а' => 'a', 'в' => 'b', 'с' => 'c'];
+            $codeName = str_replace(array_keys($tokensToReplace), array_values($tokensToReplace), $codeName);
+            $foundedCodes = $nomenclaturesEntityMap[$codeName] ?? [];
 
             foreach ($foundedCodes as $foundedCode) {
                 $rowPrice = intval($row['quantity']) !== 0 ? doubleval($row['price']) / intval($row['quantity']) : 0.00;
                 $rowPrice = round($rowPrice, 2);
                 $codePriceFrom = round(doubleval($foundedCode['price_from']), 2);
                 $codePriceTo = round(doubleval($foundedCode['price_to']), 2);
+
 
                 if ($rowPrice >= $codePriceFrom && $rowPrice <= $codePriceTo) {
                     $finalData['elements'][$key]['code_number'] = $foundedCode['code_number'];
