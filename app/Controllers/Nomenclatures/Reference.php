@@ -423,7 +423,7 @@ class Reference extends BaseController
                 $groupedItems[$elementName]['price'] += $item['price'];
             }
         }
-
+        
         $groupedFilteredItems = $this->mergeDuplicateEntries($groupedItems);
 
         // Fetch only relevant nomenclaturesSyncEntities based on names in groupedFilteredItems
@@ -567,26 +567,25 @@ class Reference extends BaseController
         $result = [];
 
         foreach ($array as $key => $value) {
-            // Extract the product name from the key (before the |||)
-            $productName = explode(' ||| ', $key)[0];
+            // Use both product name and single_item_price to create a unique identifier
+            $productKey = $value['name'] . ' ||| ' . number_format($value['single_item_price'], 2);
 
-            // If this product already exists in the result, merge the quantities and prices
-            if (isset($result[$productName])) {
-                $result[$productName]['quantity'] += $value['quantity'];
-                $result[$productName]['price'] += $value['price'];
+            if (isset($result[$productKey])) {
+                // Merge quantities, prices, and invoices if the product already exists
+                $result[$productKey]['quantity'] += $value['quantity'];
+                $result[$productKey]['price'] += $value['price'];
+                $result[$productKey]['invoices'] = array_merge($result[$productKey]['invoices'], $value['invoices']);
             } else {
-                // Initialize the result with the current product
-                $result[$productName] = $value;
+                // Add the product to the result
+                $result[$productKey] = $value;
             }
         }
 
-        // Now reconstruct the array with the original keys (productName ||| single_item_price)
-        $finalResult = [];
-        foreach ($result as $productName => $details) {
-            $key = $productName . ' ||| ' . number_format($details['single_item_price'], 2);
-            $finalResult[$key] = $details;
+        // Remove duplicate invoices (if any) from merged entries
+        foreach ($result as &$product) {
+            $product['invoices'] = array_unique($product['invoices'], SORT_REGULAR);
         }
 
-        return $finalResult;
+        return $result;
     }
 }
