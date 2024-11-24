@@ -78,6 +78,10 @@ class Synchronization extends BaseController
                 'name' => $row['B']
             ];
 
+            if(empty($data['code_name']) || empty($data['name'])){
+                continue;
+            }
+
             $nomenclaturesSyncEntitiesModel->insert($data);
         }
 
