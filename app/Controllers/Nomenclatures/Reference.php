@@ -48,6 +48,23 @@ class Reference extends BaseController
      */
     public function view(): string
     {
+        //set memory limit to 0
+        ini_set('memory_limit', '-1');
+        //set max execution time to unlimited
+        set_time_limit(0);
+
+        // Adjust maximum file size to 100MB
+        ini_set('upload_max_filesize', '100M');
+        // Adjust maximum size of POST data to 101MB
+        ini_set('post_max_size', '101M');
+        // Increase the maximum number of files allowed to be uploaded simultaneously
+        ini_set('max_file_uploads', '1000');
+
+        //display all errors
+        ini_set('display_errors', '1');
+        ini_set('display_startup_errors', '1');
+        error_reporting(E_ALL);
+
         $this->viewData['assets']['js'] = 'Nomenclatures/reference.js';
 
         $selectedProviderId = (int)$this->request->getGet('provider_id') ?? 0;
@@ -347,7 +364,7 @@ class Reference extends BaseController
                         'quantity' => $item['quantity'],
                         'price' => $item['value'],
                         'single_item_price' => $item['wholesaler_price'],
-                        'credit_notice' => (int)$item['credit_notice']
+                        'credit_notice' => $item['credit_notice'] ?? 0
                     ];
                 }
             }
@@ -370,7 +387,7 @@ class Reference extends BaseController
                         'quantity' => $item['quantity'],
                         'price' => $item['value'],
                         'single_item_price' => $item['wholesaler_price'],
-                        'credit_notice' => (int)$item['credit_notice']
+                        'credit_notice' => $item['credit_notice'] ?? 0
                     ];
                 }
             }
@@ -393,7 +410,7 @@ class Reference extends BaseController
                         'quantity' => $item['quantity'],
                         'price' => $item['totalValue'],
                         'single_item_price' => $item['price_per_item'],
-                        'credit_notice' => (int)$item['credit_notice']
+                        'credit_notice' => $item['credit_notice'] ?? 0
                     ];
                 }
             }
