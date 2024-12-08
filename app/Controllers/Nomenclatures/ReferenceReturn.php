@@ -30,7 +30,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Exception;
 
-class Reference extends BaseController
+class ReferenceReturn extends BaseController
 {
     private array $viewData = [];
 
@@ -65,7 +65,7 @@ class Reference extends BaseController
      */
     public function view(): string
     {
-        $this->viewData['assets']['js'] = 'Nomenclatures/reference.js';
+        $this->viewData['assets']['js'] = 'Nomenclatures/reference-return.js';
 
         $selectedProviderId = (int)$this->request->getGet('provider_id') ?? 0;
         $selectedBusinessId = (int)$this->request->getGet('business_id') ?? 0;
@@ -109,7 +109,7 @@ class Reference extends BaseController
         }
         $this->viewData['companies'] = $companies;
 
-        return view('Nomenclatures/references', $this->viewData);
+        return view('Nomenclatures/references-return', $this->viewData);
     }
 
 
@@ -126,7 +126,7 @@ class Reference extends BaseController
 
         $data = $this->generateData($selectedProviderId, $selectedBusinessId, $selectedCompanyId, $dateFrom, $dateTo);
 
-        $fileName = 'Справка за закупена стока.xlsx';
+        $fileName = 'Справка за получени услуги.xlsx';
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -162,95 +162,6 @@ class Reference extends BaseController
             $counter++;
         }
 
-        // Add discount to the end of the file
-        if(in_array($selectedProviderId, [1, 2])) {
-            // Define yellow fill style
-            $yellowFill = [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => 'f5db47'],
-            ];
-
-            // Add 3 empty rows
-            for ($i = 0; $i < 3; $i++) {
-                $sheet->setCellValue('A' . $counter, '');
-                $counter++;
-            }
-
-            // Add header for the discount section
-            $sheet->setCellValue('A' . $counter, 'Отстъпки');
-            $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
-            $counter++;
-
-            // Add discount headers
-            $sheet->setCellValue('A' . $counter, 'Фактура');
-            $sheet->setCellValue('B' . $counter, 'Отстъпка');
-            $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
-            $counter++;
-
-            foreach ($data['discounts'] as $discount) {
-                $sheet->setCellValue('A' . $counter, $discount['number']);
-                $sheet->setCellValue('B' . $counter, number_format($discount['discount'], 2, '.', ''));
-                $sheet->getStyle('A' . $counter . ':G' . $counter)->getFill()->applyFromArray($yellowFill);
-                $counter++;
-            }
-        }
-
-        // Align column G to left
-        $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-
-        // Set the appropriate headers to force download
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $fileName . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer->save('php://output');
-        exit(); // Make sure the script stops after sending the file
-    }
-
-
-    public function export_invalid()
-    {
-        $selectedProviderId = (int)$this->request->getGet('provider_id') ?? 0;
-        $selectedBusinessId = (int)$this->request->getGet('business_id') ?? 0;
-        $selectedCompanyId = (int)$this->request->getGet('company_id') ?? 0;
-        $dateFrom = $this->request->getGet('date_from') ?? date('Y-m-d', strtotime('first day of this month'));
-        $dateTo = $this->request->getGet('date_to') ?? date('Y-m-d');
-
-        $data = $this->generateData($selectedProviderId, $selectedBusinessId, $selectedCompanyId, $dateFrom, $dateTo);
-
-        $fileName = 'Справка за  закупена стока - грешни.xlsx';
-
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', 'Група');
-        $sheet->setCellValue('B1', 'Код');
-        $sheet->setCellValue('C1', 'Наименование');
-        $sheet->setCellValue('D1', 'Брой');
-        $sheet->setCellValue('E1', 'Обща цена');
-        $sheet->setCellValue('F1', 'Средна цена');
-        $sheet->setCellValue('G1', 'Фактури');
-
-        $counter = 2;
-        foreach ($data['missing'] as $item) {
-            $averagePrice = intval($item['quantity']) !== 0 ? doubleval($item['price']) / intval($item['quantity']) : 0;
-
-            $invoicesElements = [];
-            foreach ($item['invoices'] as $invoice) {
-                $invoicesElements[] = $invoice['number'];
-            }
-            $invoices = implode(', ', $invoicesElements);
-
-            $sheet->setCellValue('A' . $counter, '');
-            $sheet->setCellValue('B' . $counter, '');
-            $sheet->setCellValue('C' . $counter, $item['name']);
-            $sheet->setCellValue('D' . $counter, $item['quantity']);
-            $sheet->setCellValue('E' . $counter, number_format($item['price'], 2, '.', ''));
-            $sheet->setCellValue('F' . $counter, number_format($averagePrice, 2, '.', ''));
-            $sheet->setCellValue('G' . $counter, $invoices);
-            $counter++;
-        }
 
         // Align column G to left
         $sheet->getStyle('G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
@@ -588,12 +499,12 @@ class Reference extends BaseController
 
         $finalDataEdited = [
             'elements' => [],
-            'missing' => $finalData['missing'],
-            'discounts' => $finalData['discounts']
+            'missing' => [],
+            'discounts' => []
         ];
 
         foreach ($finalData['elements'] as $item){
-            if(mb_strtolower($item['code_name']) !== 'y'){
+            if(mb_strtolower($item['code_name']) === 'y'){
                 $finalDataEdited['elements'][] = $item;
             }
         }

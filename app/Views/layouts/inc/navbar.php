@@ -65,6 +65,7 @@
                 <a class="collapse-item" href="<?= base_url('nomenclatures/export-invoices-entities') ?>">Експортиране на лекарства</a>
                 <a class="collapse-item" href="<?= base_url('nomenclatures/synchronization') ?>">Синхронизация на номенклатури</a>
                 <a class="collapse-item" href="<?= base_url('nomenclatures/reference') ?>">Справка за закупена стока</a>
+                <a class="collapse-item" href="<?= base_url('nomenclatures/reference-return') ?>">Справка за получени услуги</a>
             </div>
         </div>
     </li>

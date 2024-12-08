@@ -86,6 +86,13 @@
                         <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
                         <span class="text">Справка за закупена стока</span>
                     </a>
+
+                    <br /><br />
+
+                    <a href="<?= base_url('nomenclatures/reference-return') ?>" class="btn btn-primary btn-icon-split btn-lg" style="display: block; text-align: left;">
+                        <span class="icon text-white-50" style="float: left;"><i class="fas fa-list"></i></span>
+                        <span class="text">Справка за получени услуги</span>
+                    </a>
                 </div>
             </div>
 

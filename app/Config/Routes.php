@@ -93,6 +93,9 @@ $routes->get('/nomenclatures/reference', 'Nomenclatures\Reference::view', ['filt
 $routes->get('/nomenclatures/reference-export', 'Nomenclatures\Reference::export', ['filter' => 'authFilter']);
 $routes->get('/nomenclatures/reference-export-invalid', 'Nomenclatures\Reference::export_invalid', ['filter' => 'authFilter']);
 
+$routes->get('/nomenclatures/reference-return', 'Nomenclatures\ReferenceReturn::view', ['filter' => 'authFilter']);
+$routes->get('/nomenclatures/reference-return-export', 'Nomenclatures\ReferenceReturn::export', ['filter' => 'authFilter']);
+
 $routes->post('/nomenclatures/add-missing-element', 'Nomenclatures\Synchronization::addMissingElement', ['filter' => 'authFilter']);
 
 
