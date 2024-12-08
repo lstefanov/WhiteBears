@@ -364,7 +364,7 @@ class Reference extends BaseController
                         'quantity' => $item['quantity'],
                         'price' => $item['value'],
                         'single_item_price' => $item['wholesaler_price'],
-                        'credit_notice' => $item['credit_notice'] ?? 0
+                        'credit_notice' => (int)$item['credit_notice'] ?? 0
                     ];
                 }
             }
@@ -526,7 +526,6 @@ class Reference extends BaseController
                 $rowPrice = round($rowPrice, 2);
                 $codePriceFrom = round(doubleval($foundedCode['price_from']), 2);
                 $codePriceTo = round(doubleval($foundedCode['price_to']), 2);
-
 
                 if ($rowPrice >= $codePriceFrom && $rowPrice <= $codePriceTo) {
                     $finalData['elements'][$key]['code_number'] = $foundedCode['code_number'];

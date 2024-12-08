@@ -202,6 +202,7 @@
                             <option value="B">B (АНАЛГЕТИЦИ)</option>
                             <option value="C">C (САНИТАРИЯ)</option>
                             <option value="D">D (КОЗМЕТИКА)</option>
+                            <option value="Y">Y (УСЛУГИ)</option>
                         </select>
                     </div>
                     <div class="form-group text-center">
