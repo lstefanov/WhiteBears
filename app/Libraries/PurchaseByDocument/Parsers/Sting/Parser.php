@@ -16,6 +16,8 @@ class Parser
 
     private int $invoiceType = 1; //1- Фактура, 2 - Абонамент
 
+    private int $creditNote = 0; //1- Кредитно известие, 0 - Фактура
+
     public function execute(string $fileContent)
     {
         //Check for Invoice Type
@@ -69,6 +71,9 @@ class Parser
             }
             $this->fileContentByLines[] = $rowData;
         }
+
+        $this->checkCreditNote($this->fileContentByLines);
+        $this->result['creditNote'] = $this->creditNote;
 
         //Get items count
         $itemsCounter = new Assets\ItemsCounter($this->fileContentByLines);
@@ -155,5 +160,15 @@ class Parser
     private function checkInvoiceType(string $fileContent): void
     {
         $this->invoiceType = 1;
+    }
+
+    private function checkCreditNote(array $fileContentByLines): void
+    {
+        foreach($fileContentByLines as $line){
+            $content = mb_strtolower($line[0]);
+            if (strpos($content, 'кредитно известие') !== false) {
+                $this->creditNote = 1;
+            }
+        }
     }
 }

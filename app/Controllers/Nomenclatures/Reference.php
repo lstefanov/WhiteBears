@@ -346,7 +346,8 @@ class Reference extends BaseController
                         'name' => trim($item['designation']),
                         'quantity' => $item['quantity'],
                         'price' => $item['value'],
-                        'single_item_price' => $item['wholesaler_price']
+                        'single_item_price' => $item['wholesaler_price'],
+                        'credit_notice' => (int)$item['credit_notice']
                     ];
                 }
             }
@@ -368,7 +369,8 @@ class Reference extends BaseController
                         'name' => trim(str_replace('ОТСТЪПКА', '', $item['designation'])),
                         'quantity' => $item['quantity'],
                         'price' => $item['value'],
-                        'single_item_price' => $item['wholesaler_price']
+                        'single_item_price' => $item['wholesaler_price'],
+                        'credit_notice' => (int)$item['credit_notice']
                     ];
                 }
             }
@@ -390,7 +392,8 @@ class Reference extends BaseController
                         'name' => trim($item['product_name']),
                         'quantity' => $item['quantity'],
                         'price' => $item['totalValue'],
-                        'single_item_price' => $item['price_per_item']
+                        'single_item_price' => $item['price_per_item'],
+                        'credit_notice' => (int)$item['credit_notice']
                     ];
                 }
             }
@@ -409,18 +412,26 @@ class Reference extends BaseController
                 'number' => $invoiceDetails['invoice_number']
             ];
 
+            $quantity = $item['quantity'];
+            $price = $item['price'];
+
+            if($item['credit_notice'] === 1){
+                $quantity = -$quantity;
+                $price = -$price;
+            }
+
             if (!isset($groupedItems[$elementName])) {
                 $groupedItems[$elementName] = [
                     'name' => $item['name'],
                     'invoices' => [$invoice],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
+                    'quantity' => $quantity,
+                    'price' => $price,
                     'single_item_price' => $item['single_item_price']
                 ];
             } else {
                 $groupedItems[$elementName]['invoices'][] = $invoice;
-                $groupedItems[$elementName]['quantity'] += $item['quantity'];
-                $groupedItems[$elementName]['price'] += $item['price'];
+                $groupedItems[$elementName]['quantity'] += $quantity;
+                $groupedItems[$elementName]['price'] += $price;
             }
         }
         

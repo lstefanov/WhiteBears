@@ -31,7 +31,8 @@ class PBDStingInvoiceItemsModel extends Model
         'recommended_price',
         'limit_price',
         'percent_a',
-        'nzok'
+        'nzok',
+        'credit_notice'
     ];
 
     // Dates

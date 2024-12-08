@@ -87,7 +87,6 @@ class Add extends BaseController
             $parsedData = $this->parseAster();
         }
 
-
         //@todo redirect to error page
         if (empty($parsedData)) {
             die('Invalid provider !');
@@ -358,7 +357,8 @@ class Add extends BaseController
                 'source_type' => $data['type'],
                 'source_name' => $data['name'],
                 'source_content' => $data['originalContent'],
-                'created_at' => date('Y-m-d H:i:s')
+                'created_at' => date('Y-m-d H:i:s'),
+                'credit_notice' => $data['parsed']['creditNote'] ?? 0
             ];
             $purchaseByDocumentDataModel->insert($purchaseByDocumentData);
             $purchaseByDocumentId = $purchaseByDocumentDataModel->getInsertID();
@@ -458,6 +458,7 @@ class Add extends BaseController
                     'limit_price' => $invoiceItem['limitPrice'] ?? '',
                     'percent_a' => $invoiceItem['percent_a'] ?? '',
                     'nzok' => $invoiceItem['nzok'] ?? '',
+                    'credit_notice' => $data['parsed']['creditNote'] ?? 0
                 ];
                 $pbdStingInvoiceItemsModel->insert($invoiceItemData);
             }

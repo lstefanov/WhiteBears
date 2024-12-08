@@ -28,6 +28,7 @@ class PurchaseByDocumentDataModel extends Model
         'source_name',
         'source_content',
         'created_at',
+        'credit_notice'
     ];
 
     // Dates
