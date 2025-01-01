@@ -324,17 +324,20 @@ class Reference extends BaseController
 
         // Initialize an empty array to store unique invoice IDs.
         $uniqueInvoices = [];
+        $duplicateInvoices = [];
 
         // Loop through the original array.
         foreach ($invoices as $invoice) {
+            if(isset($uniqueInvoices[$invoice['invoice_number']])) {
+                $duplicateInvoices[] = $invoice['id'];
+            }
+
             // Use invoice_number as the key, this ensures only the first occurrence is kept.
             $uniqueInvoices[$invoice['invoice_number']] = $invoice['id'];
         }
 
         // Get only the unique IDs.
         $invoiceIds = array_values($uniqueInvoices);
-
-        //$invoiceIds = array_column($invoices, 'id');
 
         if (empty($invoiceIds)) {
             return [
@@ -376,7 +379,8 @@ class Reference extends BaseController
                 ->whereIn('purchase_by_document_id', $invoiceIds)
                 ->whereIn('LOWER(place)', $selectedCompanyNames)
                 ->findAll();
-
+//print_r2($invoiceIds);
+//print_r2($filteredInvoices,1);
             foreach ($filteredInvoices as $invoiceId) {
                 $items = $invoiceEntitiesModel->where('purchase_by_document_id',
                     $invoiceId['purchase_by_document_id'])->findAll();
@@ -426,7 +430,8 @@ class Reference extends BaseController
                 ->first();
             $invoice = [
                 'id' => $item['invoice_id'],
-                'number' => $invoiceDetails['invoice_number']
+                'number' => $invoiceDetails['invoice_number'],
+                'credit_notice' => $item['credit_notice']
             ];
 
             $quantity = $item['quantity'];
@@ -451,7 +456,7 @@ class Reference extends BaseController
                 $groupedItems[$elementName]['price'] += $price;
             }
         }
-        
+
         $groupedFilteredItems = $this->mergeDuplicateEntries($groupedItems);
 
         // Fetch only relevant nomenclaturesSyncEntities based on names in groupedFilteredItems
@@ -541,6 +546,7 @@ class Reference extends BaseController
                 foreach ($element['invoices'] as $invoice) {
                     $uniqueInvoicesForDiscounts[$invoice['id']]['id'] = $invoice['id'];
                     $uniqueInvoicesForDiscounts[$invoice['id']]['number'] = $invoice['number'];
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['credit_notice'] = (int) $invoice['credit_notice'];
                 }
             }
 
@@ -551,13 +557,19 @@ class Reference extends BaseController
                 ->findAll();
 
             foreach ($discounts as $discount) {
+                // Get the corresponding invoice details using purchase_by_document_id as the key
+                $relatedInvoice = $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']];
+
+                if ((int)$relatedInvoice['credit_notice'] === 1) {
+                    $discount['trade_discount'] = -$discount['trade_discount'];
+                }
                 $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']]['discount'] = $discount['trade_discount'];
             }
 
             //From $uniqueInvoicesForDiscounts remove all elements that discount is < 0
-            $uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
-                return $invoice['discount'] > 0;
-            });
+            /*$uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
+                //return $invoice['discount'] > 0;
+            });*/
 
             $finalData['discounts'] = $uniqueInvoicesForDiscounts;
         } elseif ($selectedProviderId === 2) {
@@ -565,6 +577,7 @@ class Reference extends BaseController
                 foreach ($element['invoices'] as $invoice) {
                     $uniqueInvoicesForDiscounts[$invoice['id']]['id'] = $invoice['id'];
                     $uniqueInvoicesForDiscounts[$invoice['id']]['number'] = $invoice['number'];
+                    $uniqueInvoicesForDiscounts[$invoice['id']]['credit_notice'] = (int) $invoice['credit_notice'];
                 }
             }
 
@@ -575,13 +588,20 @@ class Reference extends BaseController
                 ->findAll();
 
             foreach ($discounts as $discount) {
+                // Get the corresponding invoice details using purchase_by_document_id as the key
+                $relatedInvoice = $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']];
+
+                if ((int)$relatedInvoice['credit_notice'] === 1) {
+                    $discount['trade_discount'] = -$discount['trade_discount'];
+                }
+
                 $uniqueInvoicesForDiscounts[$discount['purchase_by_document_id']]['discount'] = $discount['trade_discount'];
             }
 
             //From $uniqueInvoicesForDiscounts remove all elements that discount is < 0
-            $uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
+            /*$uniqueInvoicesForDiscounts = array_filter($uniqueInvoicesForDiscounts, function ($invoice) {
                 return $invoice['discount'] > 0;
-            });
+            });*/
 
             $finalData['discounts'] = $uniqueInvoicesForDiscounts;
         }
